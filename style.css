@@ -441,3 +441,93 @@ body.dark-mode .job-eintrag h3 {
   transform: translateY(-2px);
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+/* === SCHRITT 5: RESPONSIVE DESIGN (Handy-Regeln) === */
+
+/* Das ist die magische "Wenn"-Bedingung:
+   "WENN der Bildschirm 768px ODER SCHMALER ist..." */
+@media (max-width: 768px) {
+
+  /* 1. Der Header (Kopfzeile) */
+  header {
+    flex-direction: column; /* ...dann stapele die Elemente (Name, Navi) ÜBEREINANDER */
+    padding: 1rem;
+    align-items: center; /* Zentriere alles */
+  }
+
+  header h1 {
+    font-size: 1.5rem; /* Mach den Namen etwas kleiner */
+    margin-bottom: 0.5rem;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap; /* Erlaube Links umzubrechen, wenn sie nicht passen */
+    justify-content: center; /* Zentriere die Links */
+    margin-top: 0.5rem;
+  }
+
+  nav a {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    padding: 0.25rem;
+  }
+  
+  #theme-toggle {
+    margin-left: 0; /* Kein linker Abstand mehr */
+    margin-top: 1rem; /* Abstand nach oben */
+  }
+
+  /* 2. Der Hauptinhalt */
+  main {
+    padding: 1rem; /* Weniger Abstand an den Seiten */
+  }
+  
+  section {
+    padding: 1rem; /* Weniger Innenabstand in den Boxen */
+  }
+
+  /* 3. Die To-Do Liste */
+  .todo-form {
+    flex-direction: column; /* Stapel Knopf UNTER das Textfeld */
+  }
+
+  #todo-input {
+    border-radius: 5px; /* Alle Ecken rund */
+    margin-bottom: 0.5rem;
+  }
+
+  #add-todo-btn {
+    border-radius: 5px; /* Alle Ecken rund */
+    padding: 0.75rem; /* Mach den Knopf höher */
+  }
+
+  /* 4. Der Lebenslauf (Ganz wichtig!) */
+  dl {
+    grid-template-columns: 100px 1fr; /* Mach die linke Spalte (dt) schmaler */
+    gap: 0.5rem;
+  }
+}
+
+
+/* "WENN der Bildschirm 480px ODER SCHMALER ist..."
+   (Für SEHR kleine Handys) */
+@media (max-width: 480px) {
+
+  /* 1. Der Lebenslauf (Nochmal) */
+  dl {
+    grid-template-columns: 1fr; /* ...dann mach EINE Spalte. Stapel alles. */
+  }
+  
+  dt {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 0.5rem;
+  }
+  
+  body.dark-mode dt {
+    border-top-color: #334155;
+  }
+  
+  dd {
+    margin-bottom: 0.5rem; /* Abstand nach unten */
+  }
+}
