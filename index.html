@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />><fieldset></fieldset>
+    <title>Meine Bewerbungsseite - Ibrahim Chamas</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <h1>Ibrahim Chamas</h1>
+      <nav>
+        <a href="#about">Über mich</a>
+        <a href="lebenslauf.html" target="_blank">Lebenslauf</a>
+        <a href="#projects">Projekte</a>
+        <a href="#contact">Kontakt</a>
+      </nav>
+
+      <button id="theme-toggle">Dunkles Design</button>
+
+    </header>
+      <nav>
+        <a href="#about">Über mich</a>
+        <a href="lebenslauf.html" target="_blank">Lebenslauf</a>
+        <a href="#projects">Projekte</a>
+        <a href="#contact">Kontakt</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="about">
+        <h2>Über mich</h2>
+        <p>Ich heiße Ibrahim Chamas und interessiere mich seit langem für Technik, Computer und Programmierung. Schon früh habe ich begonnen, mich mit Hard- und Software zu beschäftigen und eigene Projekte umzusetzen. Zurzeit befinde ich mich in einer Ausbildung zum Bürokaufmann, habe aber erkannt, dass meine eigentliche Stärke im IT-Bereich liegt. Deshalb möchte ich meine berufliche Zukunft als Fachinformatiker gestalten und meine Leidenschaft für Technik, Logik und Problemlösung in einem professionellen Umfeld weiterentwickeln.</p>
+      </section>
+
+      <section id="resume">
+        <h2>Lebenslauf</h2>
+        <p>Hier kannst du meine bisherigen Stationen sehen. Für Details einfach das PDF herunterladen.</p>
+        
+        <a href="lebenslauf.pdf" target="_blank">Lebenslauf öffnen (PDF)</a>
+      </section>
+
+      <section id="projects">
+        <h2>Meine Projekte</h2>
+        
+        <div class="project-card">
+          <h3>Zufalls-Fakten-Generator</h3>
+          <p>Dieses Projekt ruft Daten von einer externen API. Es zeigt mein Verständnis von asynchronem JavaScript (Fetch, Async/Await) und DOM-Manipulation.</p>
+          
+          <div class="fact-container">
+            <blockquote id="fact-text">
+              Klicke auf den Knopf, um einen Fakt zu laden...
+            </blockquote>
+          </div>
+          <button id="fetch-fact-btn">Neuer Fakt!</button>
+          
+        </div>
+</div>
+
+        
+        <div class="project-card">
+          <h3>Interaktive To-Do-Liste (CRUD)</h3>
+          <p>Dieses Projekt demonstriert die Grundlagen von Create, Read, Update & Delete. Alle Eingaben werden live im DOM manipuliert.</p>
+          
+          <div class="todo-form">
+            <input type="text" id="todo-input" placeholder="Neue Aufgabe...">
+            <button id="add-todo-btn">Hinzufügen</button>
+          </div>
+          
+          <ul id="todo-list">
+            </ul>
+        </div>
+        
+      </section>
+        </section>
+
+      <section id="contact">
+        <h2>Kontakt</h2>
+        <p>Du erreichst mich unter <strong>ibrahimchamas47@icloud.com</strong></p>
+      </section>
+    </main>
+
+    <footer>
+      <p>© 2025 Ibrahim Chamas</p>
+    </footer>
+    <script src="script.js"></script>
+    </body>
+</html>

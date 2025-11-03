@@ -1,0 +1,443 @@
+/* === Allgemeines Design === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Sehr gut! Sagt dem Browser, wie er Boxen messen soll. */
+  scroll-behavior: smooth; /* Sorgt für sanftes Scrollen, wenn man auf Anker-Links klickt. Gut! */
+  font-family: "Inter", Arial, sans-serif;
+}
+
+body {
+  background-color: #f9fafb; /* Helles Grau, sauber. */
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+
+/* === Kopfbereich (Header) === */
+header {
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem 2rem;
+  display: flex; /* Magie! Stellt H1 und NAV nebeneinander. */
+  justify-content: space-between; /* Schiebt H1 nach links und NAV nach rechts. */
+  align-items: center; /* Hält alles auf gleicher Höhe. */
+  position: sticky; /* Superkleber! Bleibt oben kleben beim Scrollen. */
+  top: 0;
+  z-index: 10;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  color: #1e293b;
+}
+
+nav a {
+  color: #475569;
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-weight: 500;
+  transition: color 0.3s ease; /* Sorgt für einen weichen Übergang. Gut. */
+}
+
+nav a:hover {
+  color: #0ea5e9; /* Schöne Hover-Farbe. */
+}
+
+/* === Hauptinhalt === */
+main {
+  padding: 3rem 2rem;
+  max-width: 900px;
+  margin: 0 auto; /* Zentriert den ganzen Inhalt auf großen Bildschirmen. */
+}
+
+section {
+  margin-bottom: 4rem; /* Abstand zwischen den Teilen. */
+  background-color: #ffffff; /* Weiße Boxen für deine Sektionen */
+  padding: 2rem; /* Innenabstand, damit der Text nicht am Rand klebt */
+  border-radius: 8px; /* Schöne abgerundete Ecken */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Ein leichter Schatten, sieht edel aus */
+}
+
+/* HIER WAR DEIN FEHLER: */
+section h2 {
+  font-size: 1.5rem; /* 'rem' statt 're' */
+  color: #1e293b; /* Dieselbe Farbe wie dein Name oben */
+  margin-bottom: 1rem; /* Abstand unter der Überschrift */
+  border-bottom: 2px solid #0ea5e9; /* Eine feine Linie unter der Überschrift */
+  padding-bottom: 0.5rem; /* Abstand zur Linie */
+}
+/* Und die '}' hat gefehlt! */
+
+
+/* === MEINE VERBESSERUNGEN (Damit es knallt) === */
+
+/* Den Lebenslauf-Link wie einen Knopf aussehen lassen */
+#resume a {
+  display: inline-block;
+  background-color: #0ea5e9; /* Die blaue Akzentfarbe */
+  color: #ffffff; /* Weißer Text */
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 5px; /* Abgerundete Ecken */
+  transition: all 0.3s ease;
+}
+
+#resume a:hover {
+  background-color: #0c87b8; /* Etwas dunkler beim Drüberfahren */
+  transform: translateY(-2px); /* Knopf hebt sich leicht an */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Kontakt-Bereich */
+#contact strong {
+  color: #0ea5e9; /* E-Mail hervorheben */
+  font-size: 1.1rem;
+}
+
+/* Fußzeile */
+footer {
+  text-align: center;
+  padding: 2rem;
+  margin-top: 2rem;
+  color: #64748b; /* Nicht so aufdringlich */
+  border-top: 1px solid #e2e8f0; /* Feine Trennlinie */
+}
+/* === Zurück nach oben Button === */
+#toTopBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 15px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  background: #0ea5e9; /* Dein Blau */
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  
+  /* Das ist der Trick: */
+  opacity: 0; /* Unsichtbar */
+  transform: translateY(20px); /* Leicht nach unten geschoben */
+  transition: all 0.3s ease; /* Animiert ALLES */
+  
+  /* Versteckt es, damit man es nicht klicken kann, wenn es unsichtbar ist */
+  pointer-events: none; 
+}
+
+/* Das ist die "Jacke", die JS anzieht */
+#toTopBtn.show {
+  opacity: 1; /* Sichtbar */
+  transform: translateY(0); /* An die richtige Position geschoben */
+  pointer-events: auto; /* Klickbar machen */
+}
+
+/* === Sanfte Animation beim Laden === */
+/* Dein JS-Fade-In ist kompliziert. Das geht mit purem CSS viel sauberer: */
+body {
+  /* ...deine anderen body-styles... */
+  animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+header {
+  /* ...deine normalen header-styles... */
+  transition: background-color 0.3s ease; /* Damit die Farbe sanft wechselt */
+}
+
+header.scrolled {
+  background-color: #e0f2fe; /* Dein sanftes Hellblau */
+}
+/* === Schritt 2: Der Lichtschalter-Knopf === */
+#theme-toggle {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  background: #1e293b; /* Dunkelblau */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 1.5rem; /* Etwas Abstand zur Navigation */
+}
+
+#theme-toggle:hover {
+  background: #334155;
+}
+
+
+/* === Schritt 2: Die "Dunkle Kleidung" (Dark Mode) === */
+
+/* Wenn der Body die Klasse 'dark-mode' hat... */
+body.dark-mode {
+  background-color: #0f172a; /* Sehr dunkler Hintergrund */
+  color: #e2e8f0; /* Heller Text */
+}
+
+/* ...dann soll der Header auch dunkel sein */
+body.dark-mode header {
+  background-color: #1e293b;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* ...und die Sektionen (die weißen Boxen) auch */
+body.dark-mode section {
+  background-color: #1e293b;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ...und die Überschriften */
+body.dark-mode h1,
+body.dark-mode h2 {
+  color: #ffffff;
+}
+
+/* ...und die Links in der Navi */
+body.dark-mode nav a {
+  color: #cbd5e1;
+}
+body.dark-mode nav a:hover {
+  color: #0ea5e9; /* Das Blau sieht auf Dunkel gut aus */
+}
+
+/* ...und der gescrollte Header */
+body.dark-mode header.scrolled {
+  background-color: #1a2436; /* Etwas anderer Dunkelton */
+}
+
+/* ...und der Knopf selbst (wichtig!) */
+body.dark-mode #theme-toggle {
+  background: #e2e8f0; /* Heller Knopf */
+  color: #1e293b; /* Dunkler Text */
+}
+/* === Projekt-Karten === */
+.project-card {
+  background-color: #f8fbfe; /* Ein sehr helles Blau, fast weiß */
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.project-card h3 {
+  color: #0ea5e9; /* Dein Blau */
+  margin-bottom: 0.5rem;
+}
+
+.project-card p {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Das ist die "Bühne" für den Fakt */
+.fact-container {
+  background-color: #ffffff;
+  border-left: 4px solid #0ea5e9; /* Schöner Akzent links */
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+}
+
+#fact-text {
+  font-style: italic;
+  color: #334155;
+  font-size: 1.1rem;
+}
+
+/* Der Knopf für den Fakt */
+#fetch-fact-btn {
+  display: inline-block;
+  background-color: #0ea5e9; /* Die blaue Akzentfarbe */
+  color: #ffffff; /* Weißer Text */
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  font-weight: bold;
+  border: none; /* Wichtig bei Buttons */
+  border-radius: 5px; /* Abgerundete Ecken */
+  cursor: pointer; /* Zeigt, dass man klicken kann */
+  transition: all 0.3s ease;
+}
+
+#fetch-fact-btn:hover {
+  background-color: #0c87b8; /* Etwas dunkler beim Drüberfahren */
+  transform: translateY(-2px);
+}
+
+/* Das fügen wir für den Dark Mode hinzu, damit es auch im Dunkeln gut aussieht */
+body.dark-mode .project-card {
+  background-color: #1a2436;
+  border-color: #334155;
+}
+
+body.dark-mode .fact-container {
+  background-color: #0f172a;
+  border-left-color: #0ea5e9;
+}
+
+body.dark-mode #fact-text {
+  color: #cbd5e1;
+}
+/* === Projekt: To-Do-Liste === */
+
+.todo-form {
+  display: flex; /* Stellt Textfeld und Knopf nebeneinander */
+  margin-bottom: 1rem;
+}
+
+#todo-input {
+  flex-grow: 1; /* Sagt dem Feld: "Nimm allen Platz, den du kriegen kannst" */
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px 0 0 5px; /* Ecken links rund, rechts eckig */
+  font-size: 1rem;
+}
+
+#add-todo-btn {
+  background-color: #0ea5e9; /* Dein Blau */
+  color: white;
+  border: none;
+  padding: 0 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 0 5px 5px 0; /* Ecken links eckig, rechts rund */
+  transition: background-color 0.3s ease;
+}
+
+#add-todo-btn:hover {
+  background-color: #0c87b8;
+}
+
+/* So sieht die Liste (der UL-Container) aus */
+#todo-list {
+  list-style: none; /* Keine hässlichen Punkte */
+  padding: 0;
+  margin: 0;
+}
+
+/* So sieht JEDE Aufgabe (ein LI) aus */
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Das Text-Label IN der Aufgabe */
+.todo-item span {
+  flex-grow: 1; /* Schiebt den Löschen-Knopf ganz nach rechts */
+  cursor: pointer; /* Zeigt, dass man draufklicken kann (für Update) */
+}
+
+/* (Update) So sieht eine ERLEDIGTE Aufgabe aus */
+.todo-item.completed span {
+  text-decoration: line-through; /* Durchgestrichen */
+  color: #94a3b8; /* Grau */
+}
+
+/* (Delete) Der Löschen-Knopf */
+.delete-btn {
+  background-color: #ef4444; /* Rot */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #dc2626; /* Dunkelrot */
+}
+
+
+/* --- Dark Mode Anpassungen für die To-Do-Liste --- */
+body.dark-mode #todo-input {
+  background-color: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+body.dark-mode #todo-list {
+  color: #e2e8f0;
+}
+
+body.dark-mode .todo-item {
+  border-bottom-color: #334155;
+}
+
+body.dark-mode .todo-item.completed span {
+  color: #64748b; /* Dunkleres Grau für Dark Mode */
+}
+/* === Lebenslauf-Seite Styling === */
+
+/* Macht die "Persönliche Daten" Sektion schön */
+dl {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0.5rem 1rem;
+}
+dt {
+  font-weight: bold;
+  color: #475569;
+}
+dd {
+  margin-left: 0;
+}
+body.dark-mode dt {
+  color: #94a3b8;
+}
+
+/* Trennt die einzelnen Werdegang-Punkte */
+.job-eintrag {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+.job-eintrag:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+body.dark-mode .job-eintrag {
+  border-bottom-color: #334155;
+}
+
+.job-eintrag h3 {
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+.job-eintrag p {
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+.job-eintrag ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+body.dark-mode .job-eintrag h3 {
+  color: #f1f5f9;
+}
+
+/* Styling für den PDF-Download-Link-Knopf */
+#pdf-download a {
+  display: inline-block;
+  background-color: #0ea5e9;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+#pdf-download a:hover {
+  background-color: #0c87b8;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
