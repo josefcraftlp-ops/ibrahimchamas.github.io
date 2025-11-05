@@ -2,7 +2,7 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />><fieldset></fieldset>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Meine Bewerbungsseite - Ibrahim Chamas</title>
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -16,16 +16,7 @@
         <a href="#projects">Projekte</a>
         <a href="#contact">Kontakt</a>
       </nav>
-
       <button id="theme-toggle">Dunkles Design</button>
-
-    </header>
-      <nav>
-        <a href="#about">Über mich</a>
-        <a href="lebenslauf.html" target="_blank">Lebenslauf</a>
-        <a href="#projects">Projekte</a>
-        <a href="#contact">Kontakt</a>
-      </nav>
     </header>
 
     <main>
@@ -36,9 +27,8 @@
 
       <section id="resume">
         <h2>Lebenslauf</h2>
-        <p>Hier kannst du meine bisherigen Stationen sehen. Für Details einfach das PDF herunterladen.</p>
-        
-        <a href="lebenslauf.pdf" target="_blank">Lebenslauf öffnen (PDF)</a>
+        <p>Hier kannst du meine bisherigen Stationen sehen. Klick auf den Link, um die Detailseite zu öffnen, oder lade das PDF herunter.</p>
+        <a href="lebenslauf.html" target="_blank">Lebenslauf-Seite öffnen</a>
       </section>
 
       <section id="projects">
@@ -46,44 +36,77 @@
         
         <div class="project-card">
           <h3>Zufalls-Fakten-Generator</h3>
-          <p>Dieses Projekt ruft Daten von einer externen API. Es zeigt mein Verständnis von asynchronem JavaScript (Fetch, Async/Await) und DOM-Manipulation.</p>
-          
+          <p>Dieses Projekt ruft Daten von einer externen API (Fetch, Async/Await) und zeigt DOM-Manipulation.</p>
           <div class="fact-container">
             <blockquote id="fact-text">
               Klicke auf den Knopf, um einen Fakt zu laden...
             </blockquote>
           </div>
           <button id="fetch-fact-btn">Neuer Fakt!</button>
-          
         </div>
-</div>
 
-        
         <div class="project-card">
           <h3>Interaktive To-Do-Liste (CRUD)</h3>
-          <p>Dieses Projekt demonstriert die Grundlagen von Create, Read, Update & Delete. Alle Eingaben werden live im DOM manipuliert.</p>
-          
+          <p>Dieses Projekt demonstriert Create, Read, Update & Delete. Alle Eingaben werden live im DOM manipuliert und im LocalStorage gespeichert.</p>
           <div class="todo-form">
             <input type="text" id="todo-input" placeholder="Neue Aufgabe...">
             <button id="add-todo-btn">Hinzufügen</button>
           </div>
-          
           <ul id="todo-list">
-            </ul>
+          </ul>
+        </div>
+        
+        <div class="project-card">
+          <h3>Projekt: "Emi Runner"</h3>
+          <p>Ein "Endless Runner"-Spiel mit Sprite-Animationen und Kollisions-Logik. Steuerung: Leertaste (Springen/Doppelsprung) & Pfeil-Runter (Ducken).</p>
+          
+          <div id="game-world">
+            <div id="ground"></div>
+            <div id="player"></div> 
+            <img src="" id="obstacle" alt="Hindernis"> 
+            <div id="game-over-screen">GAME OVER</div>
+          </div>
+          
+          <div id="score-board">Score: <span id="score">0</span></div>
         </div>
         
       </section>
-        </section>
 
       <section id="contact">
         <h2>Kontakt</h2>
-        <p>Du erreichst mich unter <strong>ibrahimchamas47@icloud.com</strong></p>
-      </section>
+        <p>Interesse geweckt? Schreib mir. (JavaScript-Validierung aktiv).</p>
+        <form id="contact-form">
+          
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <small class="error-message"></small>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">E-Mail:</label>
+            <input type="email" id="email" name="email" required>
+            <small class="error-message"></small>
+          </div>
+          
+          <div class="form-group">
+            <label for="message">Nachricht:</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+            <small class="error-message"></small>
+          </div>
+          
+          <button type="submit" id="submit-btn" disabled>Senden</button>
+          
+        </form>
+      </section> 
+
     </main>
 
     <footer>
       <p>© 2025 Ibrahim Chamas</p>
     </footer>
+
     <script src="script.js"></script>
-    </body>
+
+  </body>
 </html>

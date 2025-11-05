@@ -2,15 +2,19 @@
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box; /* Sehr gut! Sagt dem Browser, wie er Boxen messen soll. */
-  scroll-behavior: smooth; /* Sorgt für sanftes Scrollen, wenn man auf Anker-Links klickt. Gut! */
+  box-sizing: border-box;
+  scroll-behavior: smooth;
   font-family: "Inter", Arial, sans-serif;
 }
-
 body {
-  background-color: #f9fafb; /* Helles Grau, sauber. */
+  background-color: #f9fafb;
   color: #1a1a1a;
   line-height: 1.6;
+  animation: fadeIn 1s ease-in;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* === Kopfbereich (Header) === */
@@ -18,91 +22,72 @@ header {
   background-color: #ffffff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   padding: 1.5rem 2rem;
-  display: flex; /* Magie! Stellt H1 und NAV nebeneinander. */
-  justify-content: space-between; /* Schiebt H1 nach links und NAV nach rechts. */
-  align-items: center; /* Hält alles auf gleicher Höhe. */
-  position: sticky; /* Superkleber! Bleibt oben kleben beim Scrollen. */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
   top: 0;
   z-index: 10;
+  transition: background-color 0.3s ease;
 }
-
+header.scrolled {
+  background-color: #e0f2fe;
+}
 header h1 {
   font-size: 1.8rem;
   color: #1e293b;
 }
-
 nav a {
   color: #475569;
   text-decoration: none;
   margin-left: 1.5rem;
   font-weight: 500;
-  transition: color 0.3s ease; /* Sorgt für einen weichen Übergang. Gut. */
+  transition: color 0.3s ease;
 }
-
 nav a:hover {
-  color: #0ea5e9; /* Schöne Hover-Farbe. */
+  color: #0ea5e9;
 }
 
 /* === Hauptinhalt === */
 main {
   padding: 3rem 2rem;
   max-width: 900px;
-  margin: 0 auto; /* Zentriert den ganzen Inhalt auf großen Bildschirmen. */
+  margin: 0 auto;
 }
-
 section {
-  margin-bottom: 4rem; /* Abstand zwischen den Teilen. */
-  background-color: #ffffff; /* Weiße Boxen für deine Sektionen */
-  padding: 2rem; /* Innenabstand, damit der Text nicht am Rand klebt */
-  border-radius: 8px; /* Schöne abgerundete Ecken */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Ein leichter Schatten, sieht edel aus */
+  margin-bottom: 4rem;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
-
-/* HIER WAR DEIN FEHLER: */
 section h2 {
-  font-size: 1.5rem; /* 'rem' statt 're' */
-  color: #1e293b; /* Dieselbe Farbe wie dein Name oben */
-  margin-bottom: 1rem; /* Abstand unter der Überschrift */
-  border-bottom: 2px solid #0ea5e9; /* Eine feine Linie unter der Überschrift */
-  padding-bottom: 0.5rem; /* Abstand zur Linie */
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #0ea5e9;
+  padding-bottom: 0.5rem;
 }
-/* Und die '}' hat gefehlt! */
 
-
-/* === MEINE VERBESSERUNGEN (Damit es knallt) === */
-
-/* Den Lebenslauf-Link wie einen Knopf aussehen lassen */
-#resume a {
+/* === Knöpfe & Links === */
+#resume a,
+#pdf-download a {
   display: inline-block;
-  background-color: #0ea5e9; /* Die blaue Akzentfarbe */
-  color: #ffffff; /* Weißer Text */
+  background-color: #0ea5e9;
+  color: #ffffff;
   padding: 0.75rem 1.5rem;
   text-decoration: none;
   font-weight: bold;
-  border-radius: 5px; /* Abgerundete Ecken */
+  border-radius: 5px;
   transition: all 0.3s ease;
 }
-
-#resume a:hover {
-  background-color: #0c87b8; /* Etwas dunkler beim Drüberfahren */
-  transform: translateY(-2px); /* Knopf hebt sich leicht an */
+#resume a:hover,
+#pdf-download a:hover {
+  background-color: #0c87b8;
+  transform: translateY(-2px);
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Kontakt-Bereich */
-#contact strong {
-  color: #0ea5e9; /* E-Mail hervorheben */
-  font-size: 1.1rem;
-}
-
-/* Fußzeile */
-footer {
-  text-align: center;
-  padding: 2rem;
-  margin-top: 2rem;
-  color: #64748b; /* Nicht so aufdringlich */
-  border-top: 1px solid #e2e8f0; /* Feine Trennlinie */
-}
 /* === Zurück nach oben Button === */
 #toTopBtn {
   position: fixed;
@@ -112,236 +97,171 @@ footer {
   font-size: 18px;
   border: none;
   border-radius: 8px;
-  background: #0ea5e9; /* Dein Blau */
+  background: #0ea5e9;
   color: white;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  
-  /* Das ist der Trick: */
-  opacity: 0; /* Unsichtbar */
-  transform: translateY(20px); /* Leicht nach unten geschoben */
-  transition: all 0.3s ease; /* Animiert ALLES */
-  
-  /* Versteckt es, damit man es nicht klicken kann, wenn es unsichtbar ist */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
   pointer-events: none; 
 }
-
-/* Das ist die "Jacke", die JS anzieht */
 #toTopBtn.show {
-  opacity: 1; /* Sichtbar */
-  transform: translateY(0); /* An die richtige Position geschoben */
-  pointer-events: auto; /* Klickbar machen */
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
-/* === Sanfte Animation beim Laden === */
-/* Dein JS-Fade-In ist kompliziert. Das geht mit purem CSS viel sauberer: */
-body {
-  /* ...deine anderen body-styles... */
-  animation: fadeIn 1s ease-in;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-header {
-  /* ...deine normalen header-styles... */
-  transition: background-color 0.3s ease; /* Damit die Farbe sanft wechselt */
-}
-
-header.scrolled {
-  background-color: #e0f2fe; /* Dein sanftes Hellblau */
-}
-/* === Schritt 2: Der Lichtschalter-Knopf === */
+/* === Dark Mode === */
 #theme-toggle {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  background: #1e293b; /* Dunkelblau */
+  background: #1e293b;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-left: 1.5rem; /* Etwas Abstand zur Navigation */
+  margin-left: 1.5rem;
 }
-
 #theme-toggle:hover {
   background: #334155;
 }
-
-
-/* === Schritt 2: Die "Dunkle Kleidung" (Dark Mode) === */
-
-/* Wenn der Body die Klasse 'dark-mode' hat... */
 body.dark-mode {
-  background-color: #0f172a; /* Sehr dunkler Hintergrund */
-  color: #e2e8f0; /* Heller Text */
+  background-color: #0f172a;
+  color: #e2e8f0;
 }
-
-/* ...dann soll der Header auch dunkel sein */
 body.dark-mode header {
   background-color: #1e293b;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-
-/* ...und die Sektionen (die weißen Boxen) auch */
 body.dark-mode section {
   background-color: #1e293b;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
-
-/* ...und die Überschriften */
 body.dark-mode h1,
 body.dark-mode h2 {
   color: #ffffff;
 }
-
-/* ...und die Links in der Navi */
 body.dark-mode nav a {
   color: #cbd5e1;
 }
 body.dark-mode nav a:hover {
-  color: #0ea5e9; /* Das Blau sieht auf Dunkel gut aus */
+  color: #0ea5e9;
 }
-
-/* ...und der gescrollte Header */
 body.dark-mode header.scrolled {
-  background-color: #1a2436; /* Etwas anderer Dunkelton */
+  background-color: #1a2436;
+}
+body.dark-mode #theme-toggle {
+  background: #e2e8f0;
+  color: #1e293b;
 }
 
-/* ...und der Knopf selbst (wichtig!) */
-body.dark-mode #theme-toggle {
-  background: #e2e8f0; /* Heller Knopf */
-  color: #1e293b; /* Dunkler Text */
-}
 /* === Projekt-Karten === */
 .project-card {
-  background-color: #f8fbfe; /* Ein sehr helles Blau, fast weiß */
+  background-color: #f8fbfe;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 1.5rem;
   margin-top: 1rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
-
 .project-card h3 {
-  color: #0ea5e9; /* Dein Blau */
+  color: #0ea5e9;
   margin-bottom: 0.5rem;
 }
-
 .project-card p {
   font-size: 0.9rem;
   margin-bottom: 1rem;
 }
-
-/* Das ist die "Bühne" für den Fakt */
-.fact-container {
-  background-color: #ffffff;
-  border-left: 4px solid #0ea5e9; /* Schöner Akzent links */
-  padding: 1rem;
-  margin: 1rem 0;
-  border-radius: 4px;
-}
-
-#fact-text {
-  font-style: italic;
-  color: #334155;
-  font-size: 1.1rem;
-}
-
-/* Der Knopf für den Fakt */
-#fetch-fact-btn {
-  display: inline-block;
-  background-color: #0ea5e9; /* Die blaue Akzentfarbe */
-  color: #ffffff; /* Weißer Text */
-  padding: 0.75rem 1.5rem;
-  text-decoration: none;
-  font-weight: bold;
-  border: none; /* Wichtig bei Buttons */
-  border-radius: 5px; /* Abgerundete Ecken */
-  cursor: pointer; /* Zeigt, dass man klicken kann */
-  transition: all 0.3s ease;
-}
-
-#fetch-fact-btn:hover {
-  background-color: #0c87b8; /* Etwas dunkler beim Drüberfahren */
-  transform: translateY(-2px);
-}
-
-/* Das fügen wir für den Dark Mode hinzu, damit es auch im Dunkeln gut aussieht */
 body.dark-mode .project-card {
   background-color: #1a2436;
   border-color: #334155;
 }
 
+/* === Projekt: Fakten-Generator === */
+.fact-container {
+  background-color: #ffffff;
+  border-left: 4px solid #0ea5e9;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+}
+#fact-text {
+  font-style: italic;
+  color: #334155;
+  font-size: 1.1rem;
+}
+#fetch-fact-btn {
+  display: inline-block;
+  background-color: #0ea5e9;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+#fetch-fact-btn:hover {
+  background-color: #0c87b8;
+  transform: translateY(-2px);
+}
 body.dark-mode .fact-container {
   background-color: #0f172a;
   border-left-color: #0ea5e9;
 }
-
 body.dark-mode #fact-text {
   color: #cbd5e1;
 }
-/* === Projekt: To-Do-Liste === */
 
+/* === Projekt: To-Do-Liste === */
 .todo-form {
-  display: flex; /* Stellt Textfeld und Knopf nebeneinander */
+  display: flex;
   margin-bottom: 1rem;
 }
-
 #todo-input {
-  flex-grow: 1; /* Sagt dem Feld: "Nimm allen Platz, den du kriegen kannst" */
+  flex-grow: 1;
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
-  border-radius: 5px 0 0 5px; /* Ecken links rund, rechts eckig */
+  border-radius: 5px 0 0 5px;
   font-size: 1rem;
 }
-
 #add-todo-btn {
-  background-color: #0ea5e9; /* Dein Blau */
+  background-color: #0ea5e9;
   color: white;
   border: none;
   padding: 0 1.5rem;
   font-weight: bold;
   cursor: pointer;
-  border-radius: 0 5px 5px 0; /* Ecken links eckig, rechts rund */
+  border-radius: 0 5px 5px 0;
   transition: background-color 0.3s ease;
 }
-
 #add-todo-btn:hover {
   background-color: #0c87b8;
 }
-
-/* So sieht die Liste (der UL-Container) aus */
 #todo-list {
-  list-style: none; /* Keine hässlichen Punkte */
+  list-style: none;
   padding: 0;
   margin: 0;
 }
-
-/* So sieht JEDE Aufgabe (ein LI) aus */
 .todo-item {
   display: flex;
   align-items: center;
   padding: 0.75rem 0.5rem;
   border-bottom: 1px solid #e2e8f0;
 }
-
-/* Das Text-Label IN der Aufgabe */
 .todo-item span {
-  flex-grow: 1; /* Schiebt den Löschen-Knopf ganz nach rechts */
-  cursor: pointer; /* Zeigt, dass man draufklicken kann (für Update) */
+  flex-grow: 1;
+  cursor: pointer;
 }
-
-/* (Update) So sieht eine ERLEDIGTE Aufgabe aus */
 .todo-item.completed span {
-  text-decoration: line-through; /* Durchgestrichen */
-  color: #94a3b8; /* Grau */
+  text-decoration: line-through;
+  color: #94a3b8;
 }
-
-/* (Delete) Der Löschen-Knopf */
 .delete-btn {
-  background-color: #ef4444; /* Rot */
+  background-color: #ef4444;
   color: white;
   border: none;
   border-radius: 5px;
@@ -352,33 +272,92 @@ body.dark-mode #fact-text {
   margin-left: 1rem;
   transition: background-color 0.3s ease;
 }
-
 .delete-btn:hover {
-  background-color: #dc2626; /* Dunkelrot */
-}
-
-
-/* --- Dark Mode Anpassungen für die To-Do-Liste --- */
+  background-color: #dc2626;
+ }
 body.dark-mode #todo-input {
   background-color: #334155;
   border-color: #475569;
   color: #e2e8f0;
 }
-
 body.dark-mode #todo-list {
   color: #e2e8f0;
 }
-
 body.dark-mode .todo-item {
   border-bottom-color: #334155;
 }
-
 body.dark-mode .todo-item.completed span {
-  color: #64748b; /* Dunkleres Grau für Dark Mode */
+  color: #64748b;
 }
-/* === Lebenslauf-Seite Styling === */
 
-/* Macht die "Persönliche Daten" Sektion schön */
+/* === Projekt: Kontaktformular === */
+#contact-form {
+  margin-top: 2rem;
+}
+.form-group {
+  margin-bottom: 1.5rem;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: inherit;
+  background-color: #ffffff;
+}
+.error-message {
+  color: #ef4444;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  display: none;
+}
+.form-group.error .error-message {
+  display: block;
+}
+.form-group.error input,
+.form-group.error textarea {
+  border-color: #ef4444;
+  background-color: #fee2e2;
+}
+#submit-btn {
+  display: inline-block;
+  background-color: #0ea5e9;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+#submit-btn:hover {
+  background-color: #0c87b8;
+}
+#submit-btn:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+body.dark-mode .form-group input,
+body.dark-mode .form-group textarea {
+  background-color: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+body.dark-mode .form-group.error input,
+body.dark-mode .form-group.error textarea {
+  background-color: #452323;
+  border-color: #ef4444;
+}
+
+/* === Lebenslauf-Seite Styling === */
 dl {
   display: grid;
   grid-template-columns: 180px 1fr;
@@ -394,8 +373,6 @@ dd {
 body.dark-mode dt {
   color: #94a3b8;
 }
-
-/* Trennt die einzelnen Werdegang-Punkte */
 .job-eintrag {
   margin-bottom: 2rem;
   padding-bottom: 1rem;
@@ -408,7 +385,6 @@ body.dark-mode dt {
 body.dark-mode .job-eintrag {
   border-bottom-color: #334155;
 }
-
 .job-eintrag h3 {
   color: #1e293b;
   margin-bottom: 0.25rem;
@@ -425,109 +401,227 @@ body.dark-mode .job-eintrag h3 {
   color: #f1f5f9;
 }
 
-/* Styling für den PDF-Download-Link-Knopf */
-#pdf-download a {
-  display: inline-block;
-  background-color: #0ea5e9;
-  color: #ffffff;
-  padding: 0.75rem 1.5rem;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-}
-#pdf-download a:hover {
-  background-color: #0c87b8;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-/* === SCHRITT 5: RESPONSIVE DESIGN (Handy-Regeln) === */
-
-/* Das ist die magische "Wenn"-Bedingung:
-   "WENN der Bildschirm 768px ODER SCHMALER ist..." */
+/* === Responsive Design (Handy-Regeln) === */
 @media (max-width: 768px) {
-
-  /* 1. Der Header (Kopfzeile) */
   header {
-    flex-direction: column; /* ...dann stapele die Elemente (Name, Navi) ÜBEREINANDER */
+    flex-direction: column;
     padding: 1rem;
-    align-items: center; /* Zentriere alles */
+    align-items: center;
   }
-
   header h1 {
-    font-size: 1.5rem; /* Mach den Namen etwas kleiner */
+    font-size: 1.5rem;
     margin-bottom: 0.5rem;
   }
-
   nav {
     display: flex;
-    flex-wrap: wrap; /* Erlaube Links umzubrechen, wenn sie nicht passen */
-    justify-content: center; /* Zentriere die Links */
+    flex-wrap: wrap;
+    justify-content: center;
     margin-top: 0.5rem;
   }
-
   nav a {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
     padding: 0.25rem;
   }
-  
   #theme-toggle {
-    margin-left: 0; /* Kein linker Abstand mehr */
-    margin-top: 1rem; /* Abstand nach oben */
+    margin-left: 0;
+    margin-top: 1rem;
   }
-
-  /* 2. Der Hauptinhalt */
   main {
-    padding: 1rem; /* Weniger Abstand an den Seiten */
+    padding: 1rem;
   }
-  
   section {
-    padding: 1rem; /* Weniger Innenabstand in den Boxen */
+    padding: 1rem;
   }
-
-  /* 3. Die To-Do Liste */
   .todo-form {
-    flex-direction: column; /* Stapel Knopf UNTER das Textfeld */
+    flex-direction: column;
   }
-
   #todo-input {
-    border-radius: 5px; /* Alle Ecken rund */
+    border-radius: 5px;
     margin-bottom: 0.5rem;
   }
-
   #add-todo-btn {
-    border-radius: 5px; /* Alle Ecken rund */
-    padding: 0.75rem; /* Mach den Knopf höher */
+    border-radius: 5px;
+    padding: 0.75rem;
   }
-
-  /* 4. Der Lebenslauf (Ganz wichtig!) */
   dl {
-    grid-template-columns: 100px 1fr; /* Mach die linke Spalte (dt) schmaler */
+    grid-template-columns: 100px 1fr;
     gap: 0.5rem;
   }
 }
-
-
-/* "WENN der Bildschirm 480px ODER SCHMALER ist..."
-   (Für SEHR kleine Handys) */
 @media (max-width: 480px) {
-
-  /* 1. Der Lebenslauf (Nochmal) */
   dl {
-    grid-template-columns: 1fr; /* ...dann mach EINE Spalte. Stapel alles. */
+    grid-template-columns: 1fr;
   }
-  
   dt {
     border-top: 1px solid #e2e8f0;
     padding-top: 0.5rem;
   }
-  
   body.dark-mode dt {
     border-top-color: #334155;
   }
-  
   dd {
-    margin-bottom: 0.5rem; /* Abstand nach unten */
+    margin-bottom: 0.5rem;
   }
+}
+
+/* === PROJEKT: "Emi Runner" Spiel (ALLES) - ENDGÜLTIGE REPARATUR === */
+
+/* 1. Die Bühne und der Boden */
+#game-world {
+  width: 100%;
+  height: 300px;
+  border: 2px solid #334155;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 1rem;
+  background-image: url('background.png');
+  background-size: cover; 
+  background-repeat: repeat-x;
+  animation: scroll-background 10s linear infinite;
+  animation-play-state: paused;
+}
+body.dark-mode #game-world {
+  background-color: #0f172a;
+  border-color: #475569;
+}
+#ground {
+  width: 100%;
+  height: 10px;
+  background-color: #475569;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  animation: scroll-ground 2s linear infinite;
+  animation-play-state: paused;
+}
+body.dark-mode #ground {
+  background-color: #94a3b8;
+}
+
+/* 2. Der Spieler (BASIEREND AUF DEM 12-BILDER-SHEET) */
+#player {
+  width: 70px;
+  height: 70px;
+  position: absolute;
+  bottom: 10px; /* Steht auf dem 10px Boden */
+  left: 50px;
+  
+  background-repeat: no-repeat;
+  
+  /* Standard-Tapete ist das Lauf-Blatt (wird im JS gewechselt) */
+  background-image: url('sheet_run_slide.png'); 
+  /* Maße des Lauf-Roll-Blattes: 4 Bilder breit, 3 Bilder hoch (4*70=280px, 3*70=210px) */
+  background-size: 280px 210px; 
+  background-position: 0 0;
+}
+
+/* 3. Die Hindernisse */
+#obstacle {
+  position: absolute;
+  bottom: 10px; /* Alle stehen auf dem Boden */
+  left: 100%;
+  height: auto;
+  width: 30px; /* Standard (Lippenstift) */
+}
+#obstacle.obstacle-high {
+  width: 50px; /* (Iboya) */
+}
+#obstacle.obstacle-momo {
+  width: 50px; /* (Momo) */
+}
+
+/* 4. UI-Elemente */
+#game-over-screen {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  font-weight: bold;
+  color: #ef4444;
+  display: none;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 1rem;
+  border-radius: 10px;
+}
+body.dark-mode #game-over-screen {
+  background: rgba(15, 23, 42, 0.8);
+}
+#score-board {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-top: 1rem;
+}
+
+/* === 5. ALLE ANIMATIONEN (SAUBER & NEU) === */
+
+/* Laufen (Spielt die 4 Bilder der OBERSTEN Reihe ab) */
+#player.is-running {
+  background-image: url('sheet_run_slide.png');
+  background-size: 280px 210px; /* Wichtig: Größe muss zur Animation passen */
+  animation: run-cycle 0.4s steps(4) infinite; 
+  background-position: 0 0;
+}
+@keyframes run-cycle {
+  100% { background-position: -280px 0; }
+}
+
+/* Springen */
+#player.is-jumping {
+  background-image: url('sheet_jump.png'); /* WAFFENWECHSEL */
+  background-size: 280px 140px; /* Spring-Blatt ist nur 2 Reihen hoch */
+  background-position: 0 0; /* Starte auf der 1. Spring-Reihe */
+  animation: jump-cycle 0.5s steps(4), jump 0.5s ease;
+}
+@keyframes jump-cycle {
+  100% { background-position: -280px 0; } /* Spielt die 4 Bilder der ersten Reihe ab */
+}
+@keyframes jump {
+  0% { bottom: 10px; }
+  50% { bottom: 80px; }
+  100% { bottom: 10px; }
+}
+
+/* Doppelsprung */
+#player.is-double-jumping {
+  background-image: url('sheet_jump.png');
+  background-size: 280px 140px;
+  background-position: 0 -70px; /* Startet auf der ZWEITEN Spring-Reihe */
+  animation: double-jump-cycle 0.7s steps(4), double-jump 0.7s ease;
+}
+@keyframes double-jump-cycle {
+  100% { background-position: -280px -70px; } /* Spielt die 4 Bilder der zweiten Reihe ab */
+}
+@keyframes double-jump {
+  0% { bottom: 10px; }
+  50% { bottom: 150px; }
+  100% { bottom: 10px; }
+}
+
+/* Ducken / Rollen */
+#player.is-ducking {
+  /* Bleibt beim LAUF-Blatt */
+  background-image: url('sheet_run_slide.png');
+  background-size: 280px 210px; /* Maße des Lauf-Roll-Blattes */
+  
+  height: 50px; /* Hitbox wird kleiner */
+  bottom: 10px; /* Bleibt auf dem Boden */
+  
+  animation: roll-cycle 0.5s steps(4);
+  background-position: 0 -140px; /* Startet bei der UNTERSTEN (dritten) Reihe */
+}
+@keyframes roll-cycle {
+  100% { background-position: -280px -140px; } /* Bewegt sich über die 4 Bilder der Roll-Animation */
+}
+
+
+/* Hintergrund-Scrollen */
+@keyframes scroll-ground {
+  0% { background-position: 0 0; }
+  100% { background-position: -100% 0; }
+}
+@keyframes scroll-background {
+  0% { background-position: 0 0; }
+  100% { background-position: -3000px 0; }
 }
