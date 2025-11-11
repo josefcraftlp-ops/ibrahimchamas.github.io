@@ -211,7 +211,7 @@ if (contactForm) {
 }
 
 
-/* === PROJEKT: "Emi Runner" (VERSION 7.2: INPUT-FIX) === */
+/* === PROJEKT: "Emi Runner" (VERSION 7.4: FINAL PRELOADER) === */
 const gameWorld = document.querySelector("#game-world");
 
 if (gameWorld) {
@@ -256,6 +256,19 @@ if (gameWorld) {
   const ZOMBIE_TYPE_LOW = "low";
   const ZOMBIE_TYPE_HIGH = "high";
   
+  // --- DAS FEHLENDE ARRAY (FIX) ---
+  const ALL_SPRITES = [
+    SPRITE_RUN,
+    SPRITE_ROLL,
+    SPRITE_JUMP,
+    SPRITE_FALL,
+    SPRITE_LAND,
+    SPRITE_DJUMP,
+    SPRITE_DEAD,
+    ...ZOMBIE_PATHS, // Fügt Zombies 1-4 hinzu
+    "Obstacle_LippenstiftRakete.png" // Fügt die Rakete hinzu
+  ];
+  
   // --- GESCHWINDIGKEIT ---
   const BASE_OBSTACLE_SPEED = 2.5;
   const MIN_OBSTACLE_SPEED = 1.5;
@@ -268,7 +281,7 @@ if (gameWorld) {
   const GRAVITY = 1500;
   const JUMP_VELOCITY = 750;
   const DJUMP_VELOCITY = 650;
-  const MAX_FALL_SPEED = 1400; // Wichtig für Fast-Fall
+  const MAX_FALL_SPEED = 1400;
   const FLOOR_Y = 0;
   const OFFSET_Y = 1;
   const COYOTE_TIME = 0.12;
@@ -289,7 +302,7 @@ if (gameWorld) {
   let onGround = true, canDouble = true;
   let coyoteTimer = 0, jumpBufferTimer = 0;
   let isRolling = false, isDead = false, isLanding = false;
-  let isStomping = false; // <<<--- NEUER ZUSTAND FÜR FAST-FALL
+  let isStomping = false; 
   let currentSheet = SPRITE_RUN;
   let currentCols = COLS_RUN;
   let currentFps = FPS_RUN;
@@ -319,66 +332,49 @@ if (gameWorld) {
   document.addEventListener("keyup", e => {
     if (e.code === "Space") { keys.space = false; }
     if (e.code === "ArrowDown") { keys.down = false; onDownReleased(); }
-  const ZOMBIE_TYPE_HIGH = "high";
-
-// --- NEU: PRELOADER-LISTE ---
-const ALL_SPRITES = [
-  SPRITE_RUN,
-  SPRITE_ROLL,
-  SPRITE_JUMP,
-  SPRITE_FALL,
-  SPRITE_LAND,
-  SPRITE_DJUMP,
-  SPRITE_DEAD,
-  ...ZOMBIE_PATHS // Fügt alle 4 Zombie/Raketen-Pfade hinzu
-];
   });
 
-  /**
-   * DAS GEHIRN (v7.3 - MIT HITBOX-ANPASSUNG)
-   */
+  // --- Animations-Gehirn (v3.2) ---
   function setSheet(sheet, fps){
     if (currentSheet === sheet || (isDead && sheet !== SPRITE_DEAD)) return; 
     currentSheet = sheet;
     currentFps = fps;
-
-    // --- HIER IST DER FIX ---
-    // Passe die Hitbox-Höhe je nach Animation an
+    
+    // --- HITBOX-FIX (v7.3) ---
     switch (sheet) {
       case SPRITE_RUN:
         currentCols = COLS_RUN;
-        playerHitbox.style.height = "80px"; // Standard-Lauf-Höhe
+        playerHitbox.style.height = "120px";
         break;
       case SPRITE_ROLL:
         currentCols = COLS_ROLL;
-        playerHitbox.style.height = "50px"; // NIEDRIGE Roll-Höhe
+        playerHitbox.style.height = "60px";
         break;
       case SPRITE_JUMP:
         currentCols = COLS_JUMP;
-        playerHitbox.style.height = "80px"; // Etwas kleiner beim Springen
+        playerHitbox.style.height = "100px";
         break;
       case SPRITE_FALL:
         currentCols = COLS_FALL;
-        playerHitbox.style.height = "80px"; // Etwas kleiner beim Fallen
+        playerHitbox.style.height = "100px";
         break;
       case SPRITE_LAND:
         currentCols = COLS_LAND;
-        playerHitbox.style.height = "75px"; // Geduckte Landung
+        playerHitbox.style.height = "90px";
         break;
       case SPRITE_DJUMP:
         currentCols = COLS_DJUMP;
-        playerHitbox.style.height = "80px";
+        playerHitbox.style.height = "100px";
         break;
       case SPRITE_DEAD:
         currentCols = COLS_DEAD;
-        playerHitbox.style.height = "60px"; // Klein beim Sterben
+        playerHitbox.style.height = "60px";
         break;
       default:
         currentCols = 1;
-        playerHitbox.style.height = "80px";
+        playerHitbox.style.height = "120px";
     }
-    // --- ENDE DES FIX ---
-
+    
     animTime = 0;
     animCol = 0;
   }
@@ -394,30 +390,25 @@ const ALL_SPRITES = [
     player.style.backgroundSize = `${sheetWidth}px ${FRAME_H}px`;
   }
 
-  // --- Spieler-Aktionen (REPARIERT) ---
+  // --- Spieler-Aktionen (v7.2) ---
   function onJumpPressed(){
     if (isLanding || isDead) return;
     jumpBufferTimer = JUMP_BUFFER;
   }
   
-  // REPARIERT (v7.2): Setzt 'isStomping', nicht 'isRolling'
   function onDownPressed(){
     if (isDead) return;
-    
     if (onGround && !isLanding) {
-      // 1. Am Boden: Normal rollen
       isRolling = true;
       setSheet(SPRITE_ROLL, FPS_ROLL);
     } else if (!onGround) {
-      // 2. In der Luft: "Stomp" / Fast-Fall!
-      if (!isStomping) { // Nur einmal auslösen
+      if (!isStomping) {
         velY = -MAX_FALL_SPEED;
         isStomping = true;
       }
     }
   }
   
-  // REPARIERT (v7.2): Bricht nur das Rollen am Boden ab
   function onDownReleased() {
     if (isRolling) {
       isRolling = false;
@@ -480,11 +471,12 @@ const ALL_SPRITES = [
 
   // --- RAKETEN-LOGIK ---
   function spawnRocket() {
+    // 50/50 Chance: tief oder hoch
     if (Math.random() > 0.5) {
-      rocketObstacle.style.bottom = "1px";
+      rocketObstacle.style.bottom = "1px"; // Tief (Spring drüber)
       currentRocketType = ZOMBIE_TYPE_LOW;
     } else {
-      rocketObstacle.style.bottom = "150px"; 
+      rocketObstacle.style.bottom = "150px"; // Hoch (Roll drunter)
       currentRocketType = ZOMBIE_TYPE_HIGH;
     }
 
@@ -504,8 +496,9 @@ const ALL_SPRITES = [
     if (isDead) return;
     
     const playerRect = playerHitbox.getBoundingClientRect();
-    const zombieRect = zombieHitbox.getBoundingClientRect();
     
+    // 1. Check Zombie-Kollision
+    const zombieRect = zombieHitbox.getBoundingClientRect();
     const isCollidingZombie = playerRect.left < zombieRect.right &&
                               playerRect.right > zombieRect.left &&
                               playerRect.top < zombieRect.bottom &&
@@ -519,6 +512,7 @@ const ALL_SPRITES = [
       }
     }
     
+    // 2. Check Raketen-Kollision
     const rocketRect = rocketHitbox.getBoundingClientRect();
     const isCollidingRocket = playerRect.left < rocketRect.right &&
                               playerRect.right > rocketRect.left &&
@@ -572,7 +566,7 @@ const ALL_SPRITES = [
       }
     }
 
-    // --- PHYSIK (REPARIERT v7.2) ---
+    // --- PHYSIK (v7.2) ---
     if (isDead) {
       if (onGround) velY = 0;
       else velY -= GRAVITY * dt;
@@ -580,22 +574,18 @@ const ALL_SPRITES = [
       if (posY <= FLOOR_Y) { posY = FLOOR_Y; onGround = true; }
     
     } else if (isRolling && onGround) { 
-      // Nur "Rollen"-Physik anwenden, wenn wir AM BODEN sind
       velY = Math.max(velY - GRAVITY*dt*0.2, 0);
     } else {
-      // Normale Physik (Laufen, Springen, Fallen, Stompen)
       tryConsumeJump();
-      
-      if (!isStomping) { // Nur Schwerkraft anwenden, wenn wir NICHT stompen
+      if (!isStomping) {
         if (!keys.space && velY > 0 && !onGround) velY *= VARIABLE_JUMP_CUT;
         velY -= GRAVITY * dt;
       }
-      
       if (velY < -MAX_FALL_SPEED) velY = -MAX_FALL_SPEED;
     }
     posY += velY * dt;
 
-    // --- STATE-LOGIK (REPARIERT v7.2) ---
+    // --- STATE-LOGIK (v7.2) ---
     if (posY <= FLOOR_Y) {
       posY = FLOOR_Y;
       velY = 0;
@@ -603,12 +593,10 @@ const ALL_SPRITES = [
         onGround = true; canDouble = true;
         
         if (isStomping) {
-          // 1. Wenn wir vom "Stomp" landen -> direkt rollen
           isRolling = true;
           isStomping = false;
           setSheet(SPRITE_ROLL, FPS_ROLL);
         } else {
-          // 2. Normale Landung
           isLanding = true;
           setSheet(SPRITE_LAND, FPS_LAND);
         }
@@ -617,44 +605,40 @@ const ALL_SPRITES = [
       onGround = false;
       if (!isDead) coyoteTimer = Math.max(coyoteTimer, COYOTE_TIME);
       
-      if (velY < 0 && !isLanding && !isDead && !isStomping) { // Nicht 'Fall' setzen, wenn wir 'Stomp'
+      if (velY < 0 && !isLanding && !isDead && !isStomping) {
         if(currentSheet !== SPRITE_FALL && currentSheet !== SPRITE_DJUMP && currentSheet !== SPRITE_JUMP) {
            setSheet(SPRITE_FALL, FPS_FALL);
         }
       }
     }
 
-    // --- ANIMATION (REPARIERT v7.2) ---
+    // --- ANIMATION ---
     animTime += dt;
     const frameDur = 1/Math.max(1, currentFps);
     
     while (animTime >= frameDur) {
       animTime -= frameDur;
-      // (Original v3.2 Logik - KORREKT)
       let isOneShot = (currentSheet === SPRITE_JUMP || currentSheet === SPRITE_DJUMP || currentSheet === SPRITE_LAND || currentSheet === SPRITE_DEAD);
       
       if (isOneShot) {
         if (animCol < currentCols - 1) {
           animCol++;
         } else {
-          // Animation ist zu Ende
           if (currentSheet === SPRITE_JUMP || currentSheet === SPRITE_DJUMP) {
             setSheet(SPRITE_FALL, FPS_FALL);
           }
           if (currentSheet === SPRITE_LAND) {
-            isLanding = false; // Landung beendet
-            // Prüfe, ob der User 'down' HÄLT, *nachdem* er gelandet ist
+            isLanding = false;
             if (keys.down && onGround) {
               isRolling = true;
               setSheet(SPRITE_ROLL, FPS_ROLL);
             } else {
-              isRolling = false; // Sicherstellen
+              isRolling = false;
               setSheet(SPRITE_RUN, FPS_RUN);
             }
           }
         }
       } else {
-        // Looping Animationen (RUN, ROLL, FALL)
         animCol = (animCol + 1) % currentCols;
       }
     }
@@ -662,29 +646,21 @@ const ALL_SPRITES = [
     // --- RENDER & KOLLISION ---
     updateBgPos(); // Render Emi
     player.style.bottom = `${Math.round(posY + OFFSET_Y)}px`;
-    checkCollision(); // Prüfe BEIDE Hindernisse
+    checkCollision();
     
     rafId = requestAnimationFrame(loop);
   }
 
-  // --- NEU: PRELOAD-FUNKTION ---
-function preloadImages() {
-  console.log(`Preloading ${ALL_SPRITES.length} images...`);
-  ALL_SPRITES.forEach(src => {
-    const img = new Image();
-    img.src = src;
-  });
-}
-
   // --- Start-Funktion ---
   function start(){
-    isDead = false; isLanding = false; isRolling = false; isStomping = false; // Zurücksetzen
+    isDead = false; isLanding = false; isRolling = false; isStomping = false;
     onGround = true; canDouble = true;
     posY = FLOOR_Y; velY = 0;
     coyoteTimer = 0; jumpBufferTimer = 0;
-    playerHitbox.style.height = "120px";
     
     obstacleSpeed = BASE_OBSTACLE_SPEED;
+    
+    playerHitbox.style.height = "120px"; // Hitbox zurücksetzen
 
     gameOverScreen.style.display = "none";
     gameWorld.style.animationPlayState = "running";
@@ -726,6 +702,22 @@ function preloadImages() {
     rafId = requestAnimationFrame(loop);
   }
   
+  // --- PRELOADER (v7.3) ---
+  function preloadImages() {
+    console.log(`Preloading ${ALL_SPRITES.length} images...`);
+    
+    const promises = ALL_SPRITES.map(src => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(`Konnte ${src} nicht laden`);
+        img.src = src;
+      });
+    });
+    
+    return Promise.all(promises);
+  }
+  
   // Event Listener
   document.addEventListener("keydown", e => { 
     if (e.code === "KeyR") start();
@@ -737,8 +729,13 @@ function preloadImages() {
   window.addEventListener("blur", ()=> cancelAnimationFrame(rafId));
   window.addEventListener("focus", ()=> { lastTime=0; rafId=requestAnimationFrame(loop); });
 
-  // Spiel starten!
-  preloadImages();
-  start();
+  // --- Spiel starten! (v7.3) ---
+  preloadImages().then(() => {
+    console.log("Alle Bilder geladen. Spiel startet!");
+    start(); // Starte das Spiel
+  }).catch(err => {
+    console.error("Fehler beim Vorladen der Bilder:", err);
+    start(); 
+  });
   
 } // Ende des if (gameWorld) Blocks
