@@ -319,6 +319,19 @@ if (gameWorld) {
   document.addEventListener("keyup", e => {
     if (e.code === "Space") { keys.space = false; }
     if (e.code === "ArrowDown") { keys.down = false; onDownReleased(); }
+  const ZOMBIE_TYPE_HIGH = "high";
+
+// --- NEU: PRELOADER-LISTE ---
+const ALL_SPRITES = [
+  SPRITE_RUN,
+  SPRITE_ROLL,
+  SPRITE_JUMP,
+  SPRITE_FALL,
+  SPRITE_LAND,
+  SPRITE_DJUMP,
+  SPRITE_DEAD,
+  ...ZOMBIE_PATHS // Fügt alle 4 Zombie/Raketen-Pfade hinzu
+];
   });
 
   /**
@@ -654,6 +667,15 @@ if (gameWorld) {
     rafId = requestAnimationFrame(loop);
   }
 
+  // --- NEU: PRELOAD-FUNKTION ---
+function preloadImages() {
+  console.log(`Preloading ${ALL_SPRITES.length} images...`);
+  ALL_SPRITES.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+}
+
   // --- Start-Funktion ---
   function start(){
     isDead = false; isLanding = false; isRolling = false; isStomping = false; // Zurücksetzen
@@ -716,6 +738,7 @@ if (gameWorld) {
   window.addEventListener("focus", ()=> { lastTime=0; rafId=requestAnimationFrame(loop); });
 
   // Spiel starten!
+  preloadImages();
   start();
   
 } // Ende des if (gameWorld) Blocks
