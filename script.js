@@ -230,7 +230,7 @@ if (gameWorld) {
   const SPRITE_ROLL = "Roll.png";
   const SPRITE_JUMP = "Jumping.png";
   const SPRITE_FALL = "Falling.png";
-  const SPRITE_LAND = "landing.png"; 
+  const SPRITE_LAND = "Landing.png"; 
   const SPRITE_DJUMP = "Double_Jump.png";
   const SPRITE_DEAD = "Dead.png"; 
 
@@ -256,17 +256,17 @@ if (gameWorld) {
   const ZOMBIE_TYPE_LOW = "low";
   const ZOMBIE_TYPE_HIGH = "high";
   
-  // --- DAS FEHLENDE ARRAY (FIX) ---
+ // --- DAS FEHLENDE ARRAY (FIX v7.5) ---
   const ALL_SPRITES = [
     SPRITE_RUN,
     SPRITE_ROLL,
     SPRITE_JUMP,
     SPRITE_FALL,
-    SPRITE_LAND,
+    SPRITE_LAND,    // Verwendet jetzt die korrigierte Variable
     SPRITE_DJUMP,
     SPRITE_DEAD,
-    ...ZOMBIE_PATHS, // Fügt Zombies 1-4 hinzu
-    "Obstacle_LippenstiftRakete.png" // Fügt die Rakete hinzu
+    ...ZOMBIE_PATHS,
+    "Obstacle_LippenstiftRakete.png" // Korrekt (Großbuchstaben) [cite: 16]
   ];
   
   // --- GESCHWINDIGKEIT ---
