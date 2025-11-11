@@ -57,18 +57,33 @@
         </div>
         
         <div class="project-card">
-          <h3>Projekt: "Emi Runner"</h3>
-          <p>Ein "Endless Runner"-Spiel mit Sprite-Animationen und Kollisions-Logik. Steuerung: Leertaste (Springen/Doppelsprung) & Pfeil-Runter (Ducken).</p>
-          
-          <div id="game-world">
-            <div id="ground"></div>
-            <div id="player"></div> 
-            <img src="" id="obstacle" alt="Hindernis"> 
-            <div id="game-over-screen">GAME OVER</div>
-          </div>
-          
-          <div id="score-board">Score: <span id="score">0</span></div>
-        </div>
+  <h3>Projekt: "Emi Runner"</h3>
+  <p>Steuerung: <strong>Leertaste</strong>=Sprung/Doppelsprung, <strong>Pfeil runter</strong>=Rutschen, <strong>R</strong>=Restart.</p>
+
+  <div id="game-world" aria-label="Emi Runner Game">
+    <div id="ground"></div>
+    <div id="player">
+  <div id="player-hitbox"></div>
+</div>
+    <p style="margin-top:.5rem;opacity:.7">Space = Jump / Double-Jump • Pfeil runter = Slide • R = Restart</p>
+    <div id="obstacle">
+  <div id="obstacle-hitbox"></div>
+</div>
+<div id="rocket-obstacle">
+  <div id="rocket-hitbox"></div>
+</div>
+    <div id="game-over-screen">GAME OVER — Space/R zum Neustart</div>
+
+    <!-- Touch Controls (mobil) -->
+    <div id="touch-controls">
+      <button id="btn-jump" aria-label="Jump">Jump</button>
+      <button id="btn-slide" aria-label="Slide">Slide</button>
+    </div>
+  </div>
+
+  <div id="score-board">Score: <span id="score">0</span></div>
+</div>
+
         
       </section>
 

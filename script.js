@@ -74,6 +74,7 @@ if (addTodoButton) {
     }
   });
 }
+// (Alle To-Do-Funktionen bleiben gleich)
 function erstelleNeueAufgabe() {
   const aufgabenText = todoInput.value;
   if (aufgabenText === "") {
@@ -117,24 +118,24 @@ function ladeDieListe() {
   const todoListeAlsArray = JSON.parse(gespeicherteTodos);
   todoListeAlsArray.forEach((aufgabe) => {
     const li = document.createElement("li");
-    li.classList.add("todo-item");
-    const span = document.createElement("span");
-    span.textContent = aufgabe.text;
-    if (aufgabe.erledigt) li.classList.add("completed");
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "X";
-    deleteButton.classList.add("delete-btn");
-    span.addEventListener("click", () => {
-      li.classList.toggle("completed");
-      speichereDieListe();
-    });
-    deleteButton.addEventListener("click", () => {
-      todoList.removeChild(li);
-      speichereDieListe();
-    });
-    li.appendChild(span);
-    li.appendChild(deleteButton);
-    todoList.appendChild(li);
+li.classList.add("todo-item");
+const span = document.createElement("span");
+span.textContent = aufgabe.text;
+if (aufgabe.erledigt) li.classList.add("completed");
+const deleteButton = document.createElement("button");
+deleteButton.textContent = "X";
+deleteButton.classList.add("delete-btn");
+span.addEventListener("click", () => {
+  li.classList.toggle("completed");
+  speichereDieListe();
+});
+deleteButton.addEventListener("click", () => {
+  todoList.removeChild(li);
+  speichereDieListe();
+});
+li.appendChild(span);
+li.appendChild(deleteButton);
+todoList.appendChild(li);
   });
 }
 if(todoList) {
@@ -147,6 +148,7 @@ const nameInput = document.querySelector("#name");
 const emailInput = document.querySelector("#email");
 const messageInput = document.querySelector("#message");
 const submitButton = document.querySelector("#submit-btn");
+// (Alle Formular-Funktionen bleiben gleich)
 function zeigeFehler(inputElement, nachricht) {
   const formGroup = inputElement.parentElement;
   formGroup.classList.add("error");
@@ -208,208 +210,512 @@ if (contactForm) {
   });
 }
 
-/* === PROJEKT: "Emi Runner" Spiel (PHASE 5 - REPARIERT) === */
-const player = document.querySelector("#player");
-const obstacle = document.querySelector("#obstacle");
-const gameOverScreen = document.querySelector("#game-over-screen");
-const scoreDisplay = document.querySelector("#score");
+
+/* === PROJEKT: "Emi Runner" (VERSION 7.2: INPUT-FIX) === */
 const gameWorld = document.querySelector("#game-world");
-const ground = document.querySelector("#ground");
 
-let isJumping = false;
-let isDucking = false;
-let isGameOver = false;
-let score = 0;
-let obstacleSpeed = 4;
-let gameLoop;
-let scoreLoop;
-let jumpCount = 0;
-let playerAnimations = [];
-
-function clearPlayerAnimations() {
-  playerAnimations.forEach(clearTimeout);
-  playerAnimations = [];
-  player.classList.remove("is-jumping", "is-double-jumping", "is-ducking");
+if (gameWorld) {
+  // DOM
+  const player = document.getElementById("player");
+  const gameOverScreen = document.getElementById("game-over-screen");
+  const scoreDisplay = document.getElementById("score");
+  const playerHitbox = document.getElementById("player-hitbox");
+  const zombieObstacle = document.getElementById("obstacle");
+  const zombieHitbox = document.getElementById("obstacle-hitbox");
+  const rocketObstacle = document.getElementById("rocket-obstacle");
+  const rocketHitbox = document.getElementById("rocket-hitbox");
   
-  // ZURÜCK ZUR LAUF-TAPETE!
-  player.style.backgroundImage = `url('sheet_run_slide.png')`; 
-  player.style.backgroundSize = '280px 210px';
-  player.style.height = '70px'; // Standard-Höhe
+  // --- SPIELER-KONSTANTEN ---
+  const SPRITE_RUN = "Running.png";
+  const SPRITE_ROLL = "Roll.png";
+  const SPRITE_JUMP = "Jumping.png";
+  const SPRITE_FALL = "Falling.png";
+  const SPRITE_LAND = "landing.png"; 
+  const SPRITE_DJUMP = "Double_Jump.png";
+  const SPRITE_DEAD = "Dead.png"; 
+
+  const FRAME_W = 140; 
+  const FRAME_H = 140;
   
-  isJumping = false;
-  isDucking = false;
-  jumpCount = 0;
-}
+  const COLS_RUN = 12;
+  const COLS_ROLL = 9;
+  const COLS_JUMP = 10;
+  const COLS_FALL = 11;
+  const COLS_LAND = 6;
+  const COLS_DJUMP = 11;
+  const COLS_DEAD = 5;
 
-function jump() {
-  if (isGameOver || isDucking) return; 
-  player.classList.remove("is-running");
+  // --- HINDERNIS-KONSTANTEN ---
+  const ZOMBIE_PATHS = [
+    "Zombie_1/Walk.png",
+    "Zombie_2/Walk.png",
+    "Zombie_3/Walk.png",
+    "Zombie_4/Walk.png"
+  ];
+  const ZOMBIE_FPS = 10;
+  const ZOMBIE_TYPE_LOW = "low";
+  const ZOMBIE_TYPE_HIGH = "high";
+  
+  // --- GESCHWINDIGKEIT ---
+  const BASE_OBSTACLE_SPEED = 2.5;
+  const MIN_OBSTACLE_SPEED = 1.5;
+  const SPEED_INCREASE_INTERVAL = 100;
+  const SPEED_INCREASE_AMOUNT = 0.05;
+  
+  let obstacleSpeed = BASE_OBSTACLE_SPEED;
 
-  if (!isJumping) { // Nur wenn er nicht schon springt
-    clearPlayerAnimations();
-    // WAFFENWECHSEL ZUM SPRUNG-BLATT
-    player.style.backgroundImage = `url('sheet_jump.png')`;
-    player.style.backgroundSize = '280px 140px'; 
+  // --- PHYSIK ---
+  const GRAVITY = 1500;
+  const JUMP_VELOCITY = 750;
+  const DJUMP_VELOCITY = 650;
+  const MAX_FALL_SPEED = 1400; // Wichtig für Fast-Fall
+  const FLOOR_Y = 0;
+  const OFFSET_Y = 1;
+  const COYOTE_TIME = 0.12;
+  const JUMP_BUFFER = 0.12;
+  const VARIABLE_JUMP_CUT = 0.55;
+
+  // --- FPS ---
+  const FPS_RUN = 14;
+  const FPS_ROLL = 8;
+  const FPS_JUMP = 15;
+  const FPS_FALL = 14;
+  const FPS_LAND = 15;
+  const FPS_DJUMP = 15;
+  const FPS_DEAD = 15;
+
+  // --- STATE-MASCHINE ---
+  let posY = FLOOR_Y, velY = 0;
+  let onGround = true, canDouble = true;
+  let coyoteTimer = 0, jumpBufferTimer = 0;
+  let isRolling = false, isDead = false, isLanding = false;
+  let isStomping = false; // <<<--- NEUER ZUSTAND FÜR FAST-FALL
+  let currentSheet = SPRITE_RUN;
+  let currentCols = COLS_RUN;
+  let currentFps = FPS_RUN;
+  let animTime = 0, animCol = 0;
+  let lastTime = 0, rafId;
+  
+  let zombieSpawnTimer = 0;
+  let rocketSpawnTimer = 3.0;
+  let currentZombieType = ZOMBIE_TYPE_LOW;
+  let currentRocketType = ZOMBIE_TYPE_LOW;
+  
+  let score = 0;
+  let scoreInterval;
+
+  // --- Setup ---
+  player.style.width = FRAME_W + "px";
+  player.style.height = FRAME_H + "px";
+  player.style.bottom = `${Math.round(posY + OFFSET_Y)}px`;
+  player.style.willChange = "background-position, bottom";
+
+  // --- Input-Handler ---
+  const keys = { space:false, down:false };
+  document.addEventListener("keydown", e => {
+    if (e.code === "Space") { if(!keys.space){ keys.space = true; onJumpPressed(); } e.preventDefault(); }
+    if (e.code === "ArrowDown") { if (!keys.down) { keys.down = true; onDownPressed(); } e.preventDefault(); }
+  });
+  document.addEventListener("keyup", e => {
+    if (e.code === "Space") { keys.space = false; }
+    if (e.code === "ArrowDown") { keys.down = false; onDownReleased(); }
+  });
+
+  /**
+   * DAS GEHIRN (v7.3 - MIT HITBOX-ANPASSUNG)
+   */
+  function setSheet(sheet, fps){
+    if (currentSheet === sheet || (isDead && sheet !== SPRITE_DEAD)) return; 
+    currentSheet = sheet;
+    currentFps = fps;
+
+    // --- HIER IST DER FIX ---
+    // Passe die Hitbox-Höhe je nach Animation an
+    switch (sheet) {
+      case SPRITE_RUN:
+        currentCols = COLS_RUN;
+        playerHitbox.style.height = "80px"; // Standard-Lauf-Höhe
+        break;
+      case SPRITE_ROLL:
+        currentCols = COLS_ROLL;
+        playerHitbox.style.height = "50px"; // NIEDRIGE Roll-Höhe
+        break;
+      case SPRITE_JUMP:
+        currentCols = COLS_JUMP;
+        playerHitbox.style.height = "80px"; // Etwas kleiner beim Springen
+        break;
+      case SPRITE_FALL:
+        currentCols = COLS_FALL;
+        playerHitbox.style.height = "80px"; // Etwas kleiner beim Fallen
+        break;
+      case SPRITE_LAND:
+        currentCols = COLS_LAND;
+        playerHitbox.style.height = "75px"; // Geduckte Landung
+        break;
+      case SPRITE_DJUMP:
+        currentCols = COLS_DJUMP;
+        playerHitbox.style.height = "80px";
+        break;
+      case SPRITE_DEAD:
+        currentCols = COLS_DEAD;
+        playerHitbox.style.height = "60px"; // Klein beim Sterben
+        break;
+      default:
+        currentCols = 1;
+        playerHitbox.style.height = "80px";
+    }
+    // --- ENDE DES FIX ---
+
+    animTime = 0;
+    animCol = 0;
+  }
+  
+  // (Brute-Force Fix v3.2)
+  function updateBgPos(){
+    const x = -animCol * FRAME_W;
+    const y = 0;
+    const sheetWidth = currentCols * FRAME_W; 
+    player.style.backgroundImage = `url('${currentSheet}')`;
+    player.style.backgroundRepeat = "no-repeat";
+    player.style.backgroundPosition = `${x}px ${y}px`;
+    player.style.backgroundSize = `${sheetWidth}px ${FRAME_H}px`;
   }
 
-  if (jumpCount === 0) {
-    isJumping = true; 
-    jumpCount = 1;
-    player.classList.add("is-jumping");
+  // --- Spieler-Aktionen (REPARIERT) ---
+  function onJumpPressed(){
+    if (isLanding || isDead) return;
+    jumpBufferTimer = JUMP_BUFFER;
+  }
+  
+  // REPARIERT (v7.2): Setzt 'isStomping', nicht 'isRolling'
+  function onDownPressed(){
+    if (isDead) return;
     
-    let jumpTimeout = setTimeout(() => {
-      isJumping = false;
-      player.classList.remove("is-jumping");
-      player.style.backgroundImage = `url('sheet_run_slide.png')`; 
-      player.style.backgroundSize = '280px 210px'; 
-      jumpCount = 0; 
-      if (!isGameOver && !isDucking) player.classList.add("is-running");
-    }, 500);
-    playerAnimations.push(jumpTimeout);
-  } 
-  else if (jumpCount === 1) { 
-    jumpCount = 2; 
-    player.classList.remove("is-jumping"); 
-    void player.offsetWidth; 
-    player.classList.add("is-double-jumping");
+    if (onGround && !isLanding) {
+      // 1. Am Boden: Normal rollen
+      isRolling = true;
+      setSheet(SPRITE_ROLL, FPS_ROLL);
+    } else if (!onGround) {
+      // 2. In der Luft: "Stomp" / Fast-Fall!
+      if (!isStomping) { // Nur einmal auslösen
+        velY = -MAX_FALL_SPEED;
+        isStomping = true;
+      }
+    }
+  }
+  
+  // REPARIERT (v7.2): Bricht nur das Rollen am Boden ab
+  function onDownReleased() {
+    if (isRolling) {
+      isRolling = false;
+      if (onGround) setSheet(SPRITE_RUN, FPS_RUN);
+    }
+  }
+  
+  function tryConsumeJump(){
+    const canFirst = onGround || coyoteTimer > 0;
+    if (jumpBufferTimer > 0) {
+      if (canFirst) {
+        jumpBufferTimer = 0; coyoteTimer = 0; onGround = false; canDouble = true;
+        velY = JUMP_VELOCITY;
+        setSheet(SPRITE_JUMP, FPS_JUMP);
+        return true;
+      } else if (canDouble) {
+        jumpBufferTimer = 0; canDouble = false;
+        velY = DJUMP_VELOCITY;
+        setSheet(SPRITE_DJUMP, FPS_DJUMP);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // --- ZOMBIE-LOGIK ---
+  function spawnZombie() {
+    const zombieIndex = Math.floor(Math.random() * 4);
+    const zombiePath = ZOMBIE_PATHS[zombieIndex];
     
-    let doubleJumpTimeout = setTimeout(() => {
-      isJumping = false;
-      player.classList.remove("is-double-jumping");
-      player.style.backgroundImage = `url('sheet_run_slide.png')`; 
-      player.style.backgroundSize = '280px 210px'; 
-      jumpCount = 0; 
-      if (!isGameOver && !isDucking) player.classList.add("is-running");
-    }, 700);
-    playerAnimations.push(doubleJumpTimeout);
-  }
-}
-
-function duck() {
-  if (isJumping && !isGameOver) {
-      clearPlayerAnimations(); 
-  }
-  if (isGameOver || isDucking) return; 
-
-  player.classList.remove("is-running");
-  isDucking = true;
-  player.classList.add("is-ducking");
-  
-  // HIER WAR DER FEHLER: Wir müssen dem Ducken auch die richtige Tapete geben!
-  player.style.backgroundImage = `url('sheet_run_slide.png')`;
-  player.style.backgroundSize = '280px 210px'; 
-  
-  let duckTimeout = setTimeout(() => {
-    isDucking = false;
-    player.classList.remove("is-ducking");
-    if (!isGameOver && !isJumping) player.classList.add("is-running");
-  }, 500);
-  playerAnimations.push(duckTimeout);
-}
-
-function spawnObstacle() {
-  obstacle.style.left = "100%"; 
-  let rand = Math.random(); 
-  if (rand < 0.4) {
-    obstacle.src = 'obstacle_low.png';
-    obstacle.classList.remove('obstacle-high');
-    obstacle.classList.remove('obstacle-momo');
-  } else if (rand < 0.7) {
-    obstacle.src = 'obstacle_high.png';
-    obstacle.classList.add('obstacle-high');
-    obstacle.classList.remove('obstacle-momo');
-  } else {
-    obstacle.src = 'obstacle_momo.png';
-    obstacle.classList.remove('obstacle-high');
-    obstacle.classList.add('obstacle-momo');
-  }
-  obstacleSpeed += 0.05;
-}
-
-function triggerGameOver() {
-  isGameOver = true;
-  clearInterval(gameLoop);
-  clearInterval(scoreLoop);
-  gameWorld.style.animationPlayState = "paused";
-  ground.style.animationPlayState = "paused";
-  clearPlayerAnimations(); 
-  gameOverScreen.style.display = "block";
-  gameOverScreen.textContent = `GAME OVER (Score: ${score}). Leertaste drücken!`;
-}
-
-function gameLoopLogic() {
-  if (isGameOver) return;
-  let obstacleLeftCurrent = parseInt(window.getComputedStyle(obstacle).getPropertyValue("left"));
-  obstacleLeftCurrent -= obstacleSpeed;
-  obstacle.style.left = obstacleLeftCurrent + "px";
-  if (obstacleLeftCurrent < -60) {
-    spawnObstacle();
-  }
-
-  const playerBottom = parseInt(window.getComputedStyle(player).getPropertyValue("bottom"));
-  const playerHeight = parseInt(window.getComputedStyle(player).getPropertyValue("height"));
-  const isHighObstacle = obstacle.classList.contains('obstacle-high');
-  const isMomoObstacle = obstacle.classList.contains('obstacle-momo');
-  
-  if (obstacleLeftCurrent < 75 && obstacleLeftCurrent > 40) { 
-    if (isHighObstacle && playerHeight > 60) { 
-      triggerGameOver();
+    let animName = "zombie-walk";
+    let animFrames = 10;
+    
+    if (zombieIndex === 3) {
+      currentZombieType = ZOMBIE_TYPE_HIGH;
+      animName = "zombie-walk-12";
+      animFrames = 12;
+    } else {
+      currentZombieType = ZOMBIE_TYPE_LOW;
+      animName = "zombie-walk";
+      animFrames = 10;
     }
-    if (!isHighObstacle && !isMomoObstacle && playerBottom < 50) {
-      triggerGameOver();
+    
+    const posterWidth = animFrames * FRAME_W;
+    zombieObstacle.style.backgroundImage = `url('${zombiePath}')`;
+    zombieObstacle.style.backgroundSize = `${posterWidth}px ${FRAME_H}px`;
+    
+    const animDuration = (1 / ZOMBIE_FPS) * animFrames;
+    
+    zombieObstacle.style.animation = 'none';
+    void zombieObstacle.offsetWidth; 
+    
+    zombieObstacle.style.animation = `
+      obstacle-move ${obstacleSpeed}s linear forwards, 
+      ${animName} ${animDuration}s steps(${animFrames}) infinite
+    `;
+    zombieObstacle.style.animationPlayState = "running";
+    zombieSpawnTimer = obstacleSpeed + 0.2 + (Math.random() * 1.5);
+  }
+
+  // --- RAKETEN-LOGIK ---
+  function spawnRocket() {
+    if (Math.random() > 0.5) {
+      rocketObstacle.style.bottom = "1px";
+      currentRocketType = ZOMBIE_TYPE_LOW;
+    } else {
+      rocketObstacle.style.bottom = "150px"; 
+      currentRocketType = ZOMBIE_TYPE_HIGH;
     }
-    if (isMomoObstacle && playerBottom < 90) {
-      triggerGameOver();
+
+    rocketObstacle.style.animation = 'none';
+    void rocketObstacle.offsetWidth;
+    
+    rocketObstacle.style.animation = `
+      rocket-move ${obstacleSpeed * 0.8}s linear forwards
+    `; 
+    
+    rocketObstacle.style.animationPlayState = "running";
+    rocketSpawnTimer = obstacleSpeed + 3.0 + (Math.random() * 3.0);
+  }
+
+
+  function checkCollision() {
+    if (isDead) return;
+    
+    const playerRect = playerHitbox.getBoundingClientRect();
+    const zombieRect = zombieHitbox.getBoundingClientRect();
+    
+    const isCollidingZombie = playerRect.left < zombieRect.right &&
+                              playerRect.right > zombieRect.left &&
+                              playerRect.top < zombieRect.bottom &&
+                              playerRect.bottom > zombieRect.top;
+
+    if (isCollidingZombie) {
+      if (isRolling && currentZombieType === ZOMBIE_TYPE_HIGH) { /* Sicher */ } 
+      else {
+        triggerGameOver();
+        return; 
+      }
+    }
+    
+    const rocketRect = rocketHitbox.getBoundingClientRect();
+    const isCollidingRocket = playerRect.left < rocketRect.right &&
+                              playerRect.right > rocketRect.left &&
+                              playerRect.top < rocketRect.bottom &&
+                              playerRect.bottom > rocketRect.top;
+
+    if (isCollidingRocket) {
+      if (isRolling && currentRocketType === ZOMBIE_TYPE_HIGH) { /* Sicher */ } 
+      else if (!isRolling && currentRocketType === ZOMBIE_TYPE_LOW) { /* Sicher */ } 
+      else {
+        triggerGameOver();
+        return;
+      }
     }
   }
-} 
 
-function startScore() {
-  score = 0;
-  clearInterval(scoreLoop);
-  scoreLoop = setInterval(() => {
-    if (!isGameOver) {
-      score++;
-      scoreDisplay.textContent = score;
+
+  function triggerGameOver() {
+    if (isDead) return;
+    isDead = true;
+    setSheet(SPRITE_DEAD, FPS_DEAD);
+    
+    gameWorld.style.animationPlayState = "paused";
+    zombieObstacle.style.animationPlayState = "paused";
+    rocketObstacle.style.animationPlayState = "paused";
+    
+    clearInterval(scoreInterval); 
+    gameOverScreen.textContent = `GAME OVER (Score: ${score})`;
+    gameOverScreen.style.display = "block";
+  }
+
+  // --- DER HAUPT-LOOP (Game Loop) ---
+  function loop(t){
+    if (!lastTime) lastTime = t;
+    const dt = Math.min(0.033, (t - lastTime)/1000);
+    lastTime = t;
+
+    // Timer
+    if (!isDead) {
+      if (coyoteTimer > 0) coyoteTimer -= dt;
+      if (jumpBufferTimer > 0) jumpBufferTimer -= dt;
+      
+      zombieSpawnTimer -= dt;
+      if (zombieSpawnTimer <= 0) {
+        spawnZombie();
+      }
+      
+      rocketSpawnTimer -= dt;
+      if (rocketSpawnTimer <= 0) {
+        spawnRocket();
+      }
     }
-  }, 100);
-}
 
-function startGame() {
-  isGameOver = false;
-  obstacleSpeed = 4;
-  scoreDisplay.textContent = 0;
-  gameOverScreen.style.display = "none";
-  
-  clearPlayerAnimations(); 
+    // --- PHYSIK (REPARIERT v7.2) ---
+    if (isDead) {
+      if (onGround) velY = 0;
+      else velY -= GRAVITY * dt;
+      posY += velY * dt;
+      if (posY <= FLOOR_Y) { posY = FLOOR_Y; onGround = true; }
+    
+    } else if (isRolling && onGround) { 
+      // Nur "Rollen"-Physik anwenden, wenn wir AM BODEN sind
+      velY = Math.max(velY - GRAVITY*dt*0.2, 0);
+    } else {
+      // Normale Physik (Laufen, Springen, Fallen, Stompen)
+      tryConsumeJump();
+      
+      if (!isStomping) { // Nur Schwerkraft anwenden, wenn wir NICHT stompen
+        if (!keys.space && velY > 0 && !onGround) velY *= VARIABLE_JUMP_CUT;
+        velY -= GRAVITY * dt;
+      }
+      
+      if (velY < -MAX_FALL_SPEED) velY = -MAX_FALL_SPEED;
+    }
+    posY += velY * dt;
 
-  player.classList.add("is-running"); 
-  spawnObstacle(); 
-  gameWorld.style.animationPlayState = "running";
-  ground.style.animationPlayState = "running";
+    // --- STATE-LOGIK (REPARIERT v7.2) ---
+    if (posY <= FLOOR_Y) {
+      posY = FLOOR_Y;
+      velY = 0;
+      if (!onGround && !isDead) { 
+        onGround = true; canDouble = true;
+        
+        if (isStomping) {
+          // 1. Wenn wir vom "Stomp" landen -> direkt rollen
+          isRolling = true;
+          isStomping = false;
+          setSheet(SPRITE_ROLL, FPS_ROLL);
+        } else {
+          // 2. Normale Landung
+          isLanding = true;
+          setSheet(SPRITE_LAND, FPS_LAND);
+        }
+      }
+    } else {
+      onGround = false;
+      if (!isDead) coyoteTimer = Math.max(coyoteTimer, COYOTE_TIME);
+      
+      if (velY < 0 && !isLanding && !isDead && !isStomping) { // Nicht 'Fall' setzen, wenn wir 'Stomp'
+        if(currentSheet !== SPRITE_FALL && currentSheet !== SPRITE_DJUMP && currentSheet !== SPRITE_JUMP) {
+           setSheet(SPRITE_FALL, FPS_FALL);
+        }
+      }
+    }
 
-  clearInterval(gameLoop);
-  clearInterval(scoreLoop);
-  gameLoop = setInterval(gameLoopLogic, 10);
-  startScore();
-}
-
-if (gameWorld) { 
-  document.addEventListener("keydown", (event) => {
-    if (event.code === "Space") {
-      event.preventDefault(); 
-      if (isGameOver) {
-        startGame(); 
+    // --- ANIMATION (REPARIERT v7.2) ---
+    animTime += dt;
+    const frameDur = 1/Math.max(1, currentFps);
+    
+    while (animTime >= frameDur) {
+      animTime -= frameDur;
+      // (Original v3.2 Logik - KORREKT)
+      let isOneShot = (currentSheet === SPRITE_JUMP || currentSheet === SPRITE_DJUMP || currentSheet === SPRITE_LAND || currentSheet === SPRITE_DEAD);
+      
+      if (isOneShot) {
+        if (animCol < currentCols - 1) {
+          animCol++;
+        } else {
+          // Animation ist zu Ende
+          if (currentSheet === SPRITE_JUMP || currentSheet === SPRITE_DJUMP) {
+            setSheet(SPRITE_FALL, FPS_FALL);
+          }
+          if (currentSheet === SPRITE_LAND) {
+            isLanding = false; // Landung beendet
+            // Prüfe, ob der User 'down' HÄLT, *nachdem* er gelandet ist
+            if (keys.down && onGround) {
+              isRolling = true;
+              setSheet(SPRITE_ROLL, FPS_ROLL);
+            } else {
+              isRolling = false; // Sicherstellen
+              setSheet(SPRITE_RUN, FPS_RUN);
+            }
+          }
+        }
       } else {
-        jump(); 
+        // Looping Animationen (RUN, ROLL, FALL)
+        animCol = (animCol + 1) % currentCols;
       }
     }
-    if (event.code === "ArrowDown") {
-      event.preventDefault(); 
-      if (!isGameOver) {
-        duck(); 
+    
+    // --- RENDER & KOLLISION ---
+    updateBgPos(); // Render Emi
+    player.style.bottom = `${Math.round(posY + OFFSET_Y)}px`;
+    checkCollision(); // Prüfe BEIDE Hindernisse
+    
+    rafId = requestAnimationFrame(loop);
+  }
+
+  // --- Start-Funktion ---
+  function start(){
+    isDead = false; isLanding = false; isRolling = false; isStomping = false; // Zurücksetzen
+    onGround = true; canDouble = true;
+    posY = FLOOR_Y; velY = 0;
+    coyoteTimer = 0; jumpBufferTimer = 0;
+    playerHitbox.style.height = "120px";
+    
+    obstacleSpeed = BASE_OBSTACLE_SPEED;
+
+    gameOverScreen.style.display = "none";
+    gameWorld.style.animationPlayState = "running";
+    
+    setSheet(SPRITE_RUN, FPS_RUN); 
+    
+    zombieObstacle.style.animation = 'none';
+    zombieObstacle.style.left = '100%';
+    rocketObstacle.style.animation = 'none';
+    rocketObstacle.style.left = '100%';
+    
+    zombieSpawnTimer = 0.5;
+    rocketSpawnTimer = 3.0;
+    
+    // SCORE
+    score = 0;
+    scoreDisplay.textContent = score;
+    clearInterval(scoreInterval); 
+    
+    scoreInterval = setInterval(() => {
+      if (!isDead) {
+        score++;
+        scoreDisplay.textContent = score;
+        
+        if (score > 0 && score % SPEED_INCREASE_INTERVAL === 0) {
+          if (obstacleSpeed > MIN_OBSTACLE_SPEED) {
+            obstacleSpeed -= SPEED_INCREASE_AMOUNT; 
+            if (obstacleSpeed < MIN_OBSTACLE_SPEED) {
+              obstacleSpeed = MIN_OBSTACLE_SPEED;
+            }
+          }
+        }
       }
+    }, 100);
+
+    // Starte den Loop
+    cancelAnimationFrame(rafId); 
+    lastTime = 0;
+    rafId = requestAnimationFrame(loop);
+  }
+  
+  // Event Listener
+  document.addEventListener("keydown", e => { 
+    if (e.code === "KeyR") start();
+    if (e.code === "Space" && isDead) {
+      e.preventDefault();
+      start();
     }
   });
-  startGame();
-}
+  window.addEventListener("blur", ()=> cancelAnimationFrame(rafId));
+  window.addEventListener("focus", ()=> { lastTime=0; rafId=requestAnimationFrame(loop); });
+
+  // Spiel starten!
+  start();
+  
+} // Ende des if (gameWorld) Blocks

@@ -465,163 +465,197 @@ body.dark-mode .job-eintrag h3 {
   }
 }
 
-/* === PROJEKT: "Emi Runner" Spiel (ALLES) - ENDGÜLTIGE REPARATUR === */
-
-/* 1. Die Bühne und der Boden */
+/* === PROJEKT: "Emi Runner" Spiel (VERSION 3: PROFI-STATE-MACHINE) === */
 #game-world {
+  position: relative;
   width: 100%;
   height: 300px;
-  border: 2px solid #334155;
-  border-radius: 5px;
-  position: relative;
   overflow: hidden;
-  margin-top: 1rem;
-  background-image: url('background.png');
-  background-size: cover; 
-  background-repeat: repeat-x;
-  animation: scroll-background 10s linear infinite;
-  animation-play-state: paused;
-}
-body.dark-mode #game-world {
-  background-color: #0f172a;
-  border-color: #475569;
-}
-#ground {
-  width: 100%;
-  height: 10px;
-  background-color: #475569;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  animation: scroll-ground 2s linear infinite;
-  animation-play-state: paused;
-}
-body.dark-mode #ground {
-  background-color: #94a3b8;
+
+  /* Dein funktionierender Hintergrund (1920x1080 -> 533x300) */
+  background: url('background.png') repeat-x bottom;
+  background-size: 533px 300px; 
+  animation: bg-scroll-simple 10s linear infinite;
 }
 
-/* 2. Der Spieler (BASIEREND AUF DEM 12-BILDER-SHEET) */
+/* Die funktionierende Animation */
+@keyframes bg-scroll-simple {
+  from { background-position-x: 0; }
+  to   { background-position-x: -533px; } 
+}
+
+/* Boden (bleibt unsichtbar) */
+#ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0;
+  background: none;
+  z-index: 1;
+}
+
+/* Spielfigur (v4.0 - "Kastrierter" CSS-Block) */
 #player {
+  position: absolute;
+  left: 60px;
+  
+  /* Dein Boden-Abstand (muss evtl. neu justiert werden) */
+  bottom: 1px; 
+  z-index: 5;
+
+  /* NUR GRÖSSE UND POSITION */
   width: 70px;
   height: 70px;
-  position: absolute;
-  bottom: 10px; /* Steht auf dem 10px Boden */
-  left: 50px;
-  
-  background-repeat: no-repeat;
-  
-  /* Standard-Tapete ist das Lauf-Blatt (wird im JS gewechselt) */
-  background-image: url('sheet_run_slide.png'); 
-  /* Maße des Lauf-Roll-Blattes: 4 Bilder breit, 3 Bilder hoch (4*70=280px, 3*70=210px) */
-  background-size: 280px 210px; 
-  background-position: 0 0;
+
+  background-repeat: no-repeat !important;
 }
 
-/* 3. Die Hindernisse */
+/* Hindernisse (JETZT ALS ZOMBIE-DIV) */
 #obstacle {
   position: absolute;
-  bottom: 10px; /* Alle stehen auf dem Boden */
-  left: 100%;
-  height: auto;
-  width: 30px; /* Standard (Lippenstift) */
-}
-#obstacle.obstacle-high {
-  width: 50px; /* (Iboya) */
-}
-#obstacle.obstacle-momo {
-  width: 50px; /* (Momo) */
+  
+  /* Startposition (rechts, außerhalb des Bildes) */
+  left: 100%; 
+  
+  /* Gleicher Boden-Abstand wie Emi! */
+  bottom: 1px; 
+  z-index: 4; /* Knapp hinter Emi (z-index: 5) */
+
+  /* DEINE REGEL: 140x140 */
+  width: 140px;
+  height: 140px;
+
+  /* Verhindert das "Doppelt"-Problem für immer */
+  background-repeat: no-repeat !important;
 }
 
-/* 4. UI-Elemente */
+/* --- NEU: Sichtbare Hitboxen --- */
+#player-hitbox {
+  position: absolute;
+  /* Passe diese Werte an, bis die Box perfekt sitzt! */
+  width: 45px;   /* Schmaler als 140px */
+  height: 80px; /* Kleiner als 140px */
+  left: 45px;    /* Zentriert ( (140 - 50) / 2 = 45 ) */
+  bottom: 0;
+
+  outline: 2px solid rgba(255, 0, 0, 0.7); /* Rot für Emi */
+}
+
+#obstacle-hitbox {
+  position: absolute;
+  /* Passe diese Werte für den Zombie an! */
+  width: 40px;
+  height: 80px;
+  left: 40px; /* Zentriert ( (140 - 60) / 2 = 40 ) */
+  bottom: 0;
+
+  outline: 2px solid rgba(0, 0, 255, 0.7); /* Blau für Zombie */
+}
+/* --- NEU: Raketen-Styling --- */
+#rocket-obstacle {
+  position: absolute;
+  left: 100%; /* Startet rechts */
+
+  /* WICHTIG: Die 'bottom'-Position wird von JavaScript gesetzt! */
+
+  z-index: 4;
+  width: 140px; /* Deine 140x140-Regel */
+  height: 140px;
+
+  background-image: url('Obstacle_LippenstiftRakete.png');
+  background-size: 140px 140px; /* Es ist ein einzelnes Bild */
+  background-repeat: no-repeat !important;
+
+  /* Animation wird von JS zugewiesen */
+  animation-play-state: paused;
+}
+
+#rocket-hitbox {
+  position: absolute;
+  /* Tune diese Werte für die Rakete! */
+  width: 120px;
+  height: 50px;
+  left: 10px;
+  bottom: 45px;
+
+  outline: 2px solid rgba(255, 100, 0, 0.7); /* Orange für Rakete */
+}
+
+/* NEU: Eigene "Move"-Animation für die Rakete (NICHT gespiegelt) */
+@keyframes rocket-move {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100vw - 140px));
+  }
+}
+
+/* NEU: Animation für die Box-Bewegung */
+@keyframes obstacle-move {
+  from {
+    transform: translateX(0) scaleX(-1)
+  }
+  to {
+    /* Bewegt die Box 100% der Bildschirmbreite + 140px (eigene Breite) nach links */
+    transform: translateX(calc(-100vw - 140px)) scaleX(-1);
+  }
+}
+/* NEU: Animation für das Zombie-Sprite-Sheet (10 Frames) */
+@keyframes zombie-walk {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    /* Geht 10 Frames * 140px = 1400px nach links */
+    background-position: -1400px 0;
+  } /* <-- HIER WAREN DIE FEHLER */
+}
+
+/* NEU: Animation für den 12-Frame-Zombie (JETZT AUSSEN) */
+@keyframes zombie-walk-12 {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    /* Geht 12 Frames * 140px = 1680px nach links */
+    background-position: -1680px 0;
+  }
+}
+
+/* Game-Over Overlay (bleibt gleich) */
 #game-over-screen {
   position: absolute;
-  top: 50%; left: 50%;
+  left: 50%;
+  top: 50%;
   transform: translate(-50%, -50%);
-  font-size: 3rem;
-  font-weight: bold;
-  color: #ef4444;
   display: none;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 1rem;
+
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ef4444;
+  background: rgba(255, 255, 250, 0.85);
+  padding: 0.8rem 1rem;
   border-radius: 10px;
-}
-body.dark-mode #game-over-screen {
-  background: rgba(15, 23, 42, 0.8);
-}
-#score-board {
-  text-align: center;
-  font-size: 1.5rem;
-  margin-top: 1rem;
+  z-index: 10;
 }
 
-/* === 5. ALLE ANIMATIONEN (SAUBER & NEU) === */
-
-/* Laufen (Spielt die 4 Bilder der OBERSTEN Reihe ab) */
-#player.is-running {
-  background-image: url('sheet_run_slide.png');
-  background-size: 280px 210px; /* Wichtig: Größe muss zur Animation passen */
-  animation: run-cycle 0.4s steps(4) infinite; 
-  background-position: 0 0;
+/* Mobile Steuerung (bleibt gleich) */
+#touch-controls {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 6;
 }
-@keyframes run-cycle {
-  100% { background-position: -280px 0; }
+#touch-controls button {
+  padding: 0.5rem 0.8rem;
+  border: 0;
+  border-radius: 8px;
+  background: #0ea5e9;
+  color: #fff;
+  font-weight: 700;
 }
-
-/* Springen */
-#player.is-jumping {
-  background-image: url('sheet_jump.png'); /* WAFFENWECHSEL */
-  background-size: 280px 140px; /* Spring-Blatt ist nur 2 Reihen hoch */
-  background-position: 0 0; /* Starte auf der 1. Spring-Reihe */
-  animation: jump-cycle 0.5s steps(4), jump 0.5s ease;
-}
-@keyframes jump-cycle {
-  100% { background-position: -280px 0; } /* Spielt die 4 Bilder der ersten Reihe ab */
-}
-@keyframes jump {
-  0% { bottom: 10px; }
-  50% { bottom: 80px; }
-  100% { bottom: 10px; }
-}
-
-/* Doppelsprung */
-#player.is-double-jumping {
-  background-image: url('sheet_jump.png');
-  background-size: 280px 140px;
-  background-position: 0 -70px; /* Startet auf der ZWEITEN Spring-Reihe */
-  animation: double-jump-cycle 0.7s steps(4), double-jump 0.7s ease;
-}
-@keyframes double-jump-cycle {
-  100% { background-position: -280px -70px; } /* Spielt die 4 Bilder der zweiten Reihe ab */
-}
-@keyframes double-jump {
-  0% { bottom: 10px; }
-  50% { bottom: 150px; }
-  100% { bottom: 10px; }
-}
-
-/* Ducken / Rollen */
-#player.is-ducking {
-  /* Bleibt beim LAUF-Blatt */
-  background-image: url('sheet_run_slide.png');
-  background-size: 280px 210px; /* Maße des Lauf-Roll-Blattes */
-  
-  height: 50px; /* Hitbox wird kleiner */
-  bottom: 10px; /* Bleibt auf dem Boden */
-  
-  animation: roll-cycle 0.5s steps(4);
-  background-position: 0 -140px; /* Startet bei der UNTERSTEN (dritten) Reihe */
-}
-@keyframes roll-cycle {
-  100% { background-position: -280px -140px; } /* Bewegt sich über die 4 Bilder der Roll-Animation */
-}
-
-
-/* Hintergrund-Scrollen */
-@keyframes scroll-ground {
-  0% { background-position: 0 0; }
-  100% { background-position: -100% 0; }
-}
-@keyframes scroll-background {
-  0% { background-position: 0 0; }
-  100% { background-position: -3000px 0; }
-}
+@media (hover:hover) { #touch-controls { display: none; } }
