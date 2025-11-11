@@ -344,35 +344,35 @@ if (gameWorld) {
     switch (sheet) {
       case SPRITE_RUN:
         currentCols = COLS_RUN;
-        playerHitbox.style.height = "120px";
+        playerHitbox.style.height = "80px";
         break;
       case SPRITE_ROLL:
         currentCols = COLS_ROLL;
-        playerHitbox.style.height = "60px";
+        playerHitbox.style.height = "50px";
         break;
       case SPRITE_JUMP:
         currentCols = COLS_JUMP;
-        playerHitbox.style.height = "100px";
+        playerHitbox.style.height = "80px";
         break;
       case SPRITE_FALL:
         currentCols = COLS_FALL;
-        playerHitbox.style.height = "100px";
+        playerHitbox.style.height = "80px";
         break;
       case SPRITE_LAND:
         currentCols = COLS_LAND;
-        playerHitbox.style.height = "90px";
+        playerHitbox.style.height = "75px";
         break;
       case SPRITE_DJUMP:
         currentCols = COLS_DJUMP;
-        playerHitbox.style.height = "100px";
+        playerHitbox.style.height = "80px";
         break;
       case SPRITE_DEAD:
         currentCols = COLS_DEAD;
-        playerHitbox.style.height = "60px";
+        playerHitbox.style.height = "20px";
         break;
       default:
         currentCols = 1;
-        playerHitbox.style.height = "120px";
+        playerHitbox.style.height = "80px";
     }
     
     animTime = 0;
